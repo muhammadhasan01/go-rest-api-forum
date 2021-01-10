@@ -2,19 +2,19 @@ package interfaces
 
 import "github.com/jinzhu/gorm"
 
-type Auth struct {
-	gorm.Model
-
-	UserID uint
-	Token  string
-}
-
 type User struct {
 	gorm.Model
 
 	Username string
 	Email    string
 	Password string
+}
+
+type Auth struct {
+	gorm.Model
+
+	UserID uint
+	Token  string
 }
 
 type Form struct {
