@@ -1,5 +1,10 @@
 package main
 
-func main() {
+import (
+	"backend-forum/migrations"
+)
 
+func main() {
+	migrations.Migrate()
+	// migrations.CreateAccounts()
 }
