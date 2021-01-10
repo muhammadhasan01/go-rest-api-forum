@@ -7,6 +7,7 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/joho/godotenv"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func HandleErr(err error) {
@@ -27,4 +28,10 @@ func ConnectDB() *gorm.DB {
 	db, err := gorm.Open(getEnv("DB_DRIVER"), dsn)
 	HandleErr(err)
 	return db
+}
+
+func HashPassword(pass string) string {
+	hashed, err := bcrypt.GenerateFromPassword([]byte(pass), bcrypt.MinCost)
+	HandleErr(err)
+	return string(hashed)
 }
