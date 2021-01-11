@@ -21,6 +21,7 @@ type Form struct {
 	gorm.Model
 
 	UserID      uint
+	Username    string
 	Name        string
 	Description string
 }
@@ -29,6 +30,7 @@ type Post struct {
 	gorm.Model
 
 	UserID      uint
+	Username    string
 	FormID      uint
 	Title       string
 	Description string
