@@ -26,8 +26,7 @@ func PrepareLog() {
 
 func HandleErr(err error) {
 	if err != nil {
-		log.Error(err.Error())
-		panic(err.Error())
+		log.Panic(err.Error())
 	}
 }
 
