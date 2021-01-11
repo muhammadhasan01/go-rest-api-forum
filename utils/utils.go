@@ -2,8 +2,9 @@ package utils
 
 import (
 	"fmt"
-	"log"
 	"os"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
@@ -26,8 +27,8 @@ func PrepareLog() {
 
 func HandleErr(err error) {
 	if err != nil {
+		log.Error(err.Error())
 		panic(err.Error())
-		log.Fatal(err.Error())
 	}
 }
 
