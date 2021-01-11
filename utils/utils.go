@@ -12,16 +12,15 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func getEnv(key string) string {
+func GetEnv(key string) string {
 	err := godotenv.Load(".env")
 	HandleErr(err)
 	return os.Getenv(key)
 }
 
 func PrepareLog() {
-	file, err := os.OpenFile(getEnv("LOG_FILE"), os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+	file, err := os.OpenFile(GetEnv("LOG_FILE"), os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
 	HandleErr(err)
-	defer file.Close()
 	log.SetOutput(file)
 }
 
@@ -34,8 +33,8 @@ func HandleErr(err error) {
 
 func ConnectDB() *gorm.DB {
 	dsn := fmt.Sprintf("user=%v password=%v dbname=%v sslmode=disable",
-		getEnv("DB_USER"), getEnv("DB_PASSWORD"), getEnv("DB_NAME"))
-	db, err := gorm.Open(getEnv("DB_DRIVER"), dsn)
+		GetEnv("DB_USER"), GetEnv("DB_PASSWORD"), GetEnv("DB_NAME"))
+	db, err := gorm.Open(GetEnv("DB_DRIVER"), dsn)
 	HandleErr(err)
 	return db
 }
