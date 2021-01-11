@@ -16,10 +16,12 @@ func CreateAccounts() {
 		username := faker.Username()
 		email := faker.Email()
 		password := faker.Password()
+		role := "USER"
 		user := interfaces.User{
 			Username: username,
 			Email:    email,
 			Password: password,
+			Role:     role,
 		}
 		users = append(users, user)
 	}
