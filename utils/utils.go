@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/jinzhu/gorm"
@@ -10,16 +11,24 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func HandleErr(err error) {
-	if err != nil {
-		panic(err.Error())
-	}
-}
-
 func getEnv(key string) string {
 	err := godotenv.Load(".env")
 	HandleErr(err)
 	return os.Getenv(key)
+}
+
+func PrepareLog() {
+	file, err := os.OpenFile(getEnv("LOG_FILE"), os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+	HandleErr(err)
+	defer file.Close()
+	log.SetOutput(file)
+}
+
+func HandleErr(err error) {
+	if err != nil {
+		panic(err.Error())
+		log.Fatal(err.Error())
+	}
 }
 
 func ConnectDB() *gorm.DB {

@@ -1,10 +1,9 @@
 package main
 
 import (
-	"backend-forum/migrations"
+	"backend-forum/utils"
 )
 
 func main() {
-	migrations.Migrate()
-	// migrations.CreateAccounts()
+	utils.PrepareLog()
 }
