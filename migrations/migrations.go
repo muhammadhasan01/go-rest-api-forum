@@ -14,6 +14,4 @@ func Migrate() {
 	defer db.Close()
 
 	db.AutoMigrate(&Auth, &User, &Form, &Post)
-
-	CreateAccounts()
 }
