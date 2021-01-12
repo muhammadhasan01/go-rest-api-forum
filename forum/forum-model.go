@@ -30,3 +30,23 @@ func GetForum(forum_id uint) (interfaces.Forum, error) {
 
 	return forum, nil
 }
+
+func UpdateForum(forum_id uint, description string, user_id uint) map[string]interface{} {
+	db := utils.ConnectDB()
+	defer db.Close()
+
+	var forum interfaces.Forum
+	if err := db.First(&forum, forum_id).Error; err != nil {
+		return map[string]interface{}{"ErrorMsg": "Forum ID not found"}
+	}
+
+	if forum.UserID != user_id {
+		return map[string]interface{}{"ErrorMsg": "You cannot change description of other person forum"}
+	}
+
+	forum.Description = description
+	db.Save(&forum)
+
+	log.Info("Form with the id ", forum.ID, " has been updated")
+	return map[string]interface{}{"message": "forum has been updated succesfully"}
+}

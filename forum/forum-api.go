@@ -12,23 +12,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func AddForumHandler(w http.ResponseWriter, r *http.Request) {
-	body, err := ioutil.ReadAll(r.Body)
-	utils.HandleErr(err)
-	claims, _ := auth.GetClaims(r)
-
-	var formattedBody interfaces.Forum
-	err = json.Unmarshal(body, &formattedBody)
-	utils.HandleErr(err)
-
-	formattedBody.UserID = claims["user_id"].(uint)
-	formattedBody.Username = claims["username"].(string)
-
-	response := AddForum(&formattedBody)
-
-	json.NewEncoder(w).Encode(response)
-}
-
 func GetForumHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key, err := strconv.ParseUint(vars["forumID"], 10, 64)
@@ -48,6 +31,47 @@ func GetForumHandler(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(msg)
 		return
 	}
+
+	json.NewEncoder(w).Encode(response)
+}
+
+func AddForumHandler(w http.ResponseWriter, r *http.Request) {
+	body, err := ioutil.ReadAll(r.Body)
+	utils.HandleErr(err)
+	claims, _ := auth.GetClaims(r)
+
+	var formattedBody interfaces.Forum
+	err = json.Unmarshal(body, &formattedBody)
+	utils.HandleErr(err)
+
+	formattedBody.UserID = claims["user_id"].(uint)
+	formattedBody.Username = claims["username"].(string)
+
+	response := AddForum(&formattedBody)
+
+	json.NewEncoder(w).Encode(response)
+}
+
+func UpdateForumHandler(w http.ResponseWriter, r *http.Request) {
+	body, err := ioutil.ReadAll(r.Body)
+	utils.HandleErr(err)
+	claims, _ := auth.GetClaims(r)
+
+	var formattedBody interfaces.Forum
+	err = json.Unmarshal(body, &formattedBody)
+	utils.HandleErr(err)
+
+	vars := mux.Vars(r)
+	key, err := strconv.ParseUint(vars["forumID"], 10, 64)
+
+	if err != nil {
+		utils.HandleErr(err)
+		msg := interfaces.ErrorMessage{ErrorMsg: "ID cannot be converted into an integer"}
+		json.NewEncoder(w).Encode(msg)
+		return
+	}
+
+	response := UpdateForum(uint(key), formattedBody.Description, claims["user_id"].(uint))
 
 	json.NewEncoder(w).Encode(response)
 }
