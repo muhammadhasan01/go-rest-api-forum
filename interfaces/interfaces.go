@@ -18,7 +18,7 @@ type Auth struct {
 	Token  string
 }
 
-type Form struct {
+type Forum struct {
 	gorm.Model
 
 	UserID      uint
@@ -35,4 +35,8 @@ type Post struct {
 	FormID      uint
 	Title       string
 	Description string
+}
+
+type ErrorMessage struct {
+	ErrorMsg string
 }
