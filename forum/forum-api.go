@@ -75,3 +75,20 @@ func UpdateForumHandler(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(response)
 }
+
+func DeleteForumHandler(w http.ResponseWriter, r *http.Request) {
+	claims, _ := auth.GetClaims(r)
+	vars := mux.Vars(r)
+	key, err := strconv.ParseUint(vars["forumID"], 10, 64)
+
+	if err != nil {
+		utils.HandleErr(err)
+		msg := interfaces.ErrorMessage{ErrorMsg: "ID cannot be converted into an integer"}
+		json.NewEncoder(w).Encode(msg)
+		return
+	}
+
+	response := DeleteForum(uint(key), claims["user_id"].(uint))
+
+	json.NewEncoder(w).Encode(response)
+}

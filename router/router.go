@@ -23,7 +23,8 @@ func StartAPI() {
 	forumR := r.PathPrefix("/forum").Subrouter()
 	forumR.HandleFunc("/add", auth.Middleware(forum.AddForumHandler)).Methods("POST")
 	forumR.HandleFunc("/{forumID}", forum.GetForumHandler).Methods("GET")
-	forumR.HandleFunc("/{forumID}", forum.UpdateForumHandler).Methods("POST")
+	forumR.HandleFunc("/{forumID}", auth.Middleware(forum.UpdateForumHandler)).Methods("POST")
+	forumR.HandleFunc("/{forumID}", auth.Middleware(forum.DeleteForumHandler)).Methods("DELETE")
 
 	// postR := r.PathPrefix("/post").Subrouter()
 
