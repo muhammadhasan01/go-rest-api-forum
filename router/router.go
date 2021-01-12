@@ -24,12 +24,13 @@ func StartAPI() {
 	threadR := r.PathPrefix("/thread").Subrouter()
 	threadR.HandleFunc("/add", auth.Middleware(thread.AddThreadHandler)).Methods("POST")
 	threadR.HandleFunc("/{threadID}", thread.GetThreadHandler).Methods("GET")
-	threadR.HandleFunc("/{threadID}", auth.Middleware(thread.UpdateThreadHandler)).Methods("POST")
+	threadR.HandleFunc("/{threadID}", auth.Middleware(thread.UpdateThreadHandler)).Methods("PUT")
 	threadR.HandleFunc("/{threadID}", auth.Middleware(thread.DeleteThreadHandler)).Methods("DELETE")
 
 	postR := r.PathPrefix("/thread/{threadID}/post").Subrouter()
 	postR.HandleFunc("/add", auth.Middleware(post.AddPostHandler)).Methods("POST")
 	postR.HandleFunc("/{postID}", post.GetPostHandler).Methods("GET")
+	postR.HandleFunc("/{postID}", auth.Middleware(post.UpdatePostHandler)).Methods("PUT")
 
 	log.Info("Server Running...")
 	fmt.Println("Server Running...")

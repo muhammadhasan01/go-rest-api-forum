@@ -31,12 +31,12 @@ func GetPost(Post_id uint) (interfaces.Post, error) {
 	return Post, nil
 }
 
-func UpdatePost(Post_id uint, description string, user_id uint) map[string]interface{} {
+func UpdatePost(post_id uint, description string, user_id uint) map[string]interface{} {
 	db := utils.ConnectDB()
 	defer db.Close()
 
 	var Post interfaces.Post
-	if err := db.First(&Post, Post_id).Error; err != nil {
+	if err := db.First(&Post, post_id).Error; err != nil {
 		return map[string]interface{}{"ErrorMsg": "Post ID not found"}
 	}
 
