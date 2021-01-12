@@ -54,6 +54,7 @@ func Logout(user_id uint, token string, username string) map[string]interface{} 
 
 	auth := &interfaces.Auth{}
 	db.Where(map[string]interface{}{"user_id": user_id, "token": token}).First(&auth)
+	db.Unscoped().Delete(&auth)
 
 	log.Info("User with the username:", username, " has just logged out")
 	return map[string]interface{}{"message": "you have been logout successfully!"}
