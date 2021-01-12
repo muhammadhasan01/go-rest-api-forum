@@ -2,7 +2,6 @@ package user
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -48,6 +47,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	claims, _ := auth.GetClaims(r)
-	fmt.Println(claims)
-	w.Write([]byte(`{"message": "logout called"}`))
+	token := r.Header["Token"][0]
+	response := Logout(claims["user_id"].(uint), token, claims["username"].(string))
+	json.NewEncoder(w).Encode(response)
 }

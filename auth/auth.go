@@ -14,28 +14,68 @@ import (
 
 const CtxKey = "auth-token"
 
-func Middleware(endpoint http.Handler) http.Handler {
+func Middleware(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
 		if r.Header["Token"] != nil {
 			token, err := ExtractToken(r)
 			if err != nil {
+				utils.HandleErr(err)
 				fmt.Fprintf(w, err.Error())
+				return
 			}
 			if !token.Valid {
 				utils.HandleErr(errors.New("Token not valid"))
 				fmt.Fprintf(w, "Error: Token not valid")
+				return
 			}
 
 			if !checkTokenInDB(token.Raw) {
 				utils.HandleErr(errors.New("Token not found in whitelist"))
-				fmt.Fprintf(w, "Error: Token not found in whitelist")
+				fmt.Fprintf(w, "Token not found in whitelist")
+				return
 			}
 
-			endpoint.ServeHTTP(w, r)
+			next(w, r)
+			return
 		}
+		log.Warn("User not authorized")
 		fmt.Fprintf(w, "Not Authorized")
 	})
+}
+
+func ExtractToken(r *http.Request) (*jwt.Token, error) {
+	token, err := jwt.Parse(r.Header["Token"][0], func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			utils.HandleErr(errors.New("There was an error with the token"))
+			return nil, fmt.Errorf("There was an error")
+		}
+		return []byte(utils.GetEnv("API_SECRET")), nil
+	})
+	return token, err
+}
+
+func GetClaims(r *http.Request) (jwt.MapClaims, bool) {
+	tokenStr := r.Header["Token"][0]
+
+	hmacSecretString := utils.GetEnv("API_SECRET")
+	hmacSecret := []byte(hmacSecretString)
+	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+		// check token signing method etc
+		return hmacSecret, nil
+	})
+
+	if err != nil {
+		return nil, false
+	}
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		claims["user_id"] = uint(claims["user_id"].(float64))
+		claims["username"] = string(claims["username"].(string))
+		return claims, true
+	} else {
+		log.Warn("Invalid JWT Token")
+		return nil, false
+	}
 }
 
 func GetToken(user *interfaces.User) string {
@@ -61,37 +101,4 @@ func checkTokenInDB(token string) bool {
 
 	auth := &interfaces.Auth{}
 	return !db.Where("token = ? ", token).First(&auth).RecordNotFound()
-}
-
-func ExtractToken(r *http.Request) (*jwt.Token, error) {
-	token, err := jwt.Parse(r.Header["Token"][0], func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			utils.HandleErr(errors.New("There was an error with the token"))
-			return nil, fmt.Errorf("There was an error")
-		}
-		return utils.GetEnv("API_SECRET"), nil
-	})
-	return token, err
-}
-
-func GetClaims(r *http.Request) (jwt.MapClaims, bool) {
-	tokenStr := r.Header["Token"][0]
-
-	hmacSecretString := utils.GetEnv("API_SECRET")
-	hmacSecret := []byte(hmacSecretString)
-	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
-		// check token signing method etc
-		return hmacSecret, nil
-	})
-
-	if err != nil {
-		return nil, false
-	}
-
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		return claims, true
-	} else {
-		log.Warn("Invalid JWT Token")
-		return nil, false
-	}
 }

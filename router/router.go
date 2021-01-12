@@ -16,8 +16,7 @@ func StartAPI() {
 	authR := r.PathPrefix("/auth").Subrouter()
 	authR.HandleFunc("/login", user.LoginHandler).Methods("POST")
 	authR.HandleFunc("/register", user.RegisterHandler).Methods("POST")
-	authR.HandleFunc("/logout", user.LogoutHandler)
-	http.Handle("/auth/logout", auth.Middleware(authR))
+	authR.HandleFunc("/logout", auth.Middleware(user.LogoutHandler))
 
 	// forumR := r.PathPrefix("/forum").Subrouter()
 
