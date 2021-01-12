@@ -31,6 +31,7 @@ func StartAPI() {
 	postR.HandleFunc("/add", auth.Middleware(post.AddPostHandler)).Methods("POST")
 	postR.HandleFunc("/{postID}", post.GetPostHandler).Methods("GET")
 	postR.HandleFunc("/{postID}", auth.Middleware(post.UpdatePostHandler)).Methods("PUT")
+	postR.HandleFunc("/{postID}", auth.Middleware(post.DeletePostHandler)).Methods("DELETE")
 
 	log.Info("Server Running...")
 	fmt.Println("Server Running...")
