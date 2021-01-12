@@ -14,16 +14,24 @@ import (
 
 func GetPostHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	key, err := strconv.ParseUint(vars["postID"], 10, 64)
 
+	_, err := strconv.ParseUint(vars["threadID"], 10, 64)
 	if err != nil {
 		utils.HandleErr(err)
-		msg := interfaces.ErrorMessage{ErrorMsg: "ID cannot be converted into an integer"}
+		msg := interfaces.ErrorMessage{ErrorMsg: "Thread ID cannot be converted into an integer"}
 		json.NewEncoder(w).Encode(msg)
 		return
 	}
 
-	response, err := GetPost(uint(key))
+	postID, err := strconv.ParseUint(vars["postID"], 10, 64)
+	if err != nil {
+		utils.HandleErr(err)
+		msg := interfaces.ErrorMessage{ErrorMsg: "Post ID cannot be converted into an integer"}
+		json.NewEncoder(w).Encode(msg)
+		return
+	}
+
+	response, err := GetPost(uint(postID))
 
 	if err != nil {
 		utils.HandleErr(err)
@@ -48,7 +56,7 @@ func AddPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		utils.HandleErr(err)
-		msg := interfaces.ErrorMessage{ErrorMsg: "thread ID cannot be converted into an integer"}
+		msg := interfaces.ErrorMessage{ErrorMsg: "Thread ID cannot be converted into an integer"}
 		json.NewEncoder(w).Encode(msg)
 		return
 	}

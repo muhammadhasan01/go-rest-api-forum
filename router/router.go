@@ -29,6 +29,7 @@ func StartAPI() {
 
 	postR := r.PathPrefix("/thread/{threadID}/post").Subrouter()
 	postR.HandleFunc("/add", auth.Middleware(post.AddPostHandler)).Methods("POST")
+	postR.HandleFunc("/{postID}", post.GetPostHandler).Methods("GET")
 
 	log.Info("Server Running...")
 	fmt.Println("Server Running...")
