@@ -14,7 +14,7 @@ func AddThread(thread *interfaces.Thread) map[string]interface{} {
 	db.Create(&thread)
 
 	response := map[string]interface{}{"message": "thread added succesfully"}
-	log.Info("A new form with the name: ", thread.Name, " has been added succesfully")
+	log.Info("A new thread with the name: ", thread.Name, " has been added succesfully")
 
 	return response
 }
