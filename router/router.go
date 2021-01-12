@@ -2,6 +2,7 @@ package router
 
 import (
 	"backend-forum/auth"
+	"backend-forum/post"
 	"backend-forum/thread"
 	"backend-forum/user"
 	"fmt"
@@ -26,7 +27,8 @@ func StartAPI() {
 	threadR.HandleFunc("/{threadID}", auth.Middleware(thread.UpdateThreadHandler)).Methods("POST")
 	threadR.HandleFunc("/{threadID}", auth.Middleware(thread.DeleteThreadHandler)).Methods("DELETE")
 
-	// postR := r.PathPrefix("/post").Subrouter()
+	postR := r.PathPrefix("/thread/{threadID}/post").Subrouter()
+	postR.HandleFunc("/add", auth.Middleware(post.AddPostHandler)).Methods("POST")
 
 	log.Info("Server Running...")
 	fmt.Println("Server Running...")
