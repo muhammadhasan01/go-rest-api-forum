@@ -2,6 +2,7 @@ package router
 
 import (
 	"backend-forum/auth"
+	"backend-forum/forum"
 	"backend-forum/user"
 	"fmt"
 	"net/http"
@@ -13,17 +14,19 @@ import (
 
 func StartAPI() {
 	r := mux.NewRouter()
+
 	authR := r.PathPrefix("/auth").Subrouter()
 	authR.HandleFunc("/login", user.LoginHandler).Methods("POST")
 	authR.HandleFunc("/register", user.RegisterHandler).Methods("POST")
 	authR.HandleFunc("/logout", auth.Middleware(user.LogoutHandler))
 
-	// forumR := r.PathPrefix("/forum").Subrouter()
+	forumR := r.PathPrefix("/forum").Subrouter()
+	forumR.HandleFunc("/add", auth.Middleware(forum.AddForumHandler)).Methods("POST")
+	forumR.HandleFunc("/{forumID}", forum.GetForumHandler).Methods("GET")
 
 	// postR := r.PathPrefix("/post").Subrouter()
 
-	log.Info("Server running...")
-	// TODO: DELETE THIS LATER
-	fmt.Println("Running...")
+	log.Info("Server Running...")
+	fmt.Println("Server Running...")
 	log.Fatal(http.ListenAndServe(":8888", r))
 }
