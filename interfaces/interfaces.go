@@ -18,7 +18,7 @@ type Auth struct {
 	Token  string
 }
 
-type Forum struct {
+type Thread struct {
 	gorm.Model
 
 	UserID      uint
@@ -32,7 +32,7 @@ type Post struct {
 
 	UserID      uint
 	Username    string
-	FormID      uint
+	ThreadID    uint
 	Title       string
 	Description string
 }

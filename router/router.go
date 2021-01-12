@@ -2,7 +2,7 @@ package router
 
 import (
 	"backend-forum/auth"
-	"backend-forum/forum"
+	"backend-forum/thread"
 	"backend-forum/user"
 	"fmt"
 	"net/http"
@@ -20,11 +20,11 @@ func StartAPI() {
 	authR.HandleFunc("/register", user.RegisterHandler).Methods("POST")
 	authR.HandleFunc("/logout", auth.Middleware(user.LogoutHandler))
 
-	forumR := r.PathPrefix("/forum").Subrouter()
-	forumR.HandleFunc("/add", auth.Middleware(forum.AddForumHandler)).Methods("POST")
-	forumR.HandleFunc("/{forumID}", forum.GetForumHandler).Methods("GET")
-	forumR.HandleFunc("/{forumID}", auth.Middleware(forum.UpdateForumHandler)).Methods("POST")
-	forumR.HandleFunc("/{forumID}", auth.Middleware(forum.DeleteForumHandler)).Methods("DELETE")
+	threadR := r.PathPrefix("/thread").Subrouter()
+	threadR.HandleFunc("/add", auth.Middleware(thread.AddThreadHandler)).Methods("POST")
+	threadR.HandleFunc("/{threadID}", thread.GetThreadHandler).Methods("GET")
+	threadR.HandleFunc("/{threadID}", auth.Middleware(thread.UpdateThreadHandler)).Methods("POST")
+	threadR.HandleFunc("/{threadID}", auth.Middleware(thread.DeleteThreadHandler)).Methods("DELETE")
 
 	// postR := r.PathPrefix("/post").Subrouter()
 
