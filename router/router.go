@@ -4,6 +4,7 @@ import (
 	"backend-forum/auth"
 	"backend-forum/post"
 	"backend-forum/thread"
+	"backend-forum/user"
 	"fmt"
 	"net/http"
 
@@ -19,6 +20,11 @@ func StartAPI() {
 	authR.HandleFunc("/login", auth.LoginHandler).Methods("POST")
 	authR.HandleFunc("/register", auth.RegisterHandler).Methods("POST")
 	authR.HandleFunc("/logout", auth.Middleware(auth.LogoutHandler))
+
+	userR := r.PathPrefix("/user").Subrouter()
+	userR.HandleFunc("/{username}", user.GetUserHandler).Methods("GET")
+	userR.HandleFunc("/{username}", auth.Middleware(user.UpdateUserHandler)).Methods("PUT")
+	userR.HandleFunc("/{username}", auth.Middleware(user.DeleteUserHandler)).Methods("DELETE")
 
 	threadR := r.PathPrefix("/thread").Subrouter()
 	threadR.HandleFunc("/add", auth.Middleware(thread.AddThreadHandler)).Methods("POST")

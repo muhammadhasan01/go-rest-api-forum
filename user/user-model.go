@@ -1,61 +1,68 @@
 package user
 
 import (
-	"backend-forum/auth"
 	"backend-forum/interfaces"
 	"backend-forum/utils"
 
 	log "github.com/sirupsen/logrus"
-
-	"golang.org/x/crypto/bcrypt"
 )
 
-func Login(username string, pass string) map[string]interface{} {
+func GetUser(username string) map[string]interface{} {
 	db := utils.ConnectDB()
 	defer db.Close()
 
-	user := &interfaces.User{}
-	if db.Where("username = ? ", username).First(&user).RecordNotFound() {
-		return map[string]interface{}{"message": "User not found"}
+	var user interfaces.User
+	if err := db.Where("username = ?", username).First(&user).Error; err != nil {
+		return map[string]interface{}{"ErrorMsg": "username not found"}
 	}
 
-	passErr := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(pass))
-	if passErr == bcrypt.ErrMismatchedHashAndPassword && passErr != nil {
-		return map[string]interface{}{"message": "Wrong password"}
+	response := map[string]interface{}{
+		"userID":   user.ID,
+		"username": user.Username,
+		"email":    user.Email,
 	}
-
-	token := auth.GetToken(user)
-
-	log.Info("User with the username:", username, " has just logged in")
-	return map[string]interface{}{"message": "you have been logged in succesfully!", "token": token}
-}
-
-func Register(username string, email string, pass string) map[string]interface{} {
-	db := utils.ConnectDB()
-	defer db.Close()
-
-	generatedPassword := utils.HashPassword(pass)
-	user := &interfaces.User{Username: username, Email: email, Password: generatedPassword, Role: "USER"}
-
-	if !db.Where("username = ? ", username).First(&user).RecordNotFound() {
-		return map[string]interface{}{"message": "username has already been taken"}
-	}
-
-	db.Create(&user)
-
-	response := map[string]interface{}{"success": true, "message": "user registered successfully"}
 
 	return response
 }
 
-func Logout(user_id uint, token string, username string) map[string]interface{} {
+func UpdateUser(username string, password string, username_claim string) map[string]interface{} {
 	db := utils.ConnectDB()
 	defer db.Close()
 
-	auth := &interfaces.Auth{}
-	db.Where(map[string]interface{}{"user_id": user_id, "token": token}).First(&auth)
-	db.Unscoped().Delete(&auth)
+	var user interfaces.User
+	if err := db.Where("username = ?", username).First(&user).Error; err != nil {
+		return map[string]interface{}{"ErrorMsg": "User ID not found"}
+	}
 
-	log.Info("User with the username:", username, " has just logged out")
-	return map[string]interface{}{"message": "you have been logout successfully!"}
+	if user.Role == "USER" && user.Username != username_claim {
+		return map[string]interface{}{"ErrorMsg": "As a Role USER you cannot change other person password"}
+	}
+
+	user.Password = utils.HashPassword(password)
+	db.Save(&user)
+
+	log.Info("User with the username ", user.Username, " has been updated")
+	return map[string]interface{}{"message": "user has been updated succesfully"}
+}
+
+func DeleteUser(username string, username_claim string) map[string]interface{} {
+	db := utils.ConnectDB()
+	defer db.Close()
+
+	var user interfaces.User
+	if err := db.Where("username = ?", username).First(&user).Error; err != nil {
+		return map[string]interface{}{"ErrorMsg": "User ID not found"}
+	}
+
+	if user.Role == "USER" && user.Username != username_claim {
+		return map[string]interface{}{"ErrorMsg": "As a Role USER you cannot delete other person user"}
+	}
+
+	auth := &interfaces.Auth{}
+	db.Where("user_id = ?", user.ID).First(&auth)
+	db.Unscoped().Delete(&auth)
+	db.Unscoped().Delete(&user)
+
+	log.Info("User with the username ", user.Username, " has been deleted")
+	return map[string]interface{}{"message": "user has been deleted succesfully"}
 }

@@ -1,53 +1,46 @@
 package user
 
 import (
+	"backend-forum/auth"
+	"backend-forum/interfaces"
+	"backend-forum/utils"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
 
-	"backend-forum/auth"
-	"backend-forum/utils"
+	"github.com/gorilla/mux"
 )
 
-type loginBody struct {
-	Username string
-	Password string
-}
-
-type registerBody struct {
-	Username string
-	Email    string
-	Password string
-}
-
-func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	body, err := ioutil.ReadAll(r.Body)
-	utils.HandleErr(err)
-
-	var formattedBody loginBody
-	err = json.Unmarshal(body, &formattedBody)
-	utils.HandleErr(err)
-	response := Login(formattedBody.Username, formattedBody.Password)
-
+func GetUserHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	key := vars["username"]
+	response := GetUser(key)
 	json.NewEncoder(w).Encode(response)
 }
 
-func RegisterHandler(w http.ResponseWriter, r *http.Request) {
+func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	utils.HandleErr(err)
-
-	var formattedBody registerBody
-	err = json.Unmarshal(body, &formattedBody)
-	utils.HandleErr(err)
-
-	response := Register(formattedBody.Username, formattedBody.Email, formattedBody.Password)
-
-	json.NewEncoder(w).Encode(response)
-}
-
-func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	claims, _ := auth.GetClaims(r)
-	token := r.Header["Token"][0]
-	response := Logout(claims["user_id"].(uint), token, claims["username"].(string))
+
+	var formattedBody interfaces.User
+	err = json.Unmarshal(body, &formattedBody)
+	utils.HandleErr(err)
+
+	vars := mux.Vars(r)
+	key := vars["username"]
+
+	response := UpdateUser(key, formattedBody.Password, claims["username"].(string))
+
+	json.NewEncoder(w).Encode(response)
+}
+
+func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
+	claims, _ := auth.GetClaims(r)
+	vars := mux.Vars(r)
+	key := vars["username"]
+
+	response := DeleteUser(key, claims["username"].(string))
+
 	json.NewEncoder(w).Encode(response)
 }
