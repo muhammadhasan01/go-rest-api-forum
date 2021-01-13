@@ -13,7 +13,7 @@ func AddThread(thread *interfaces.Thread) map[string]interface{} {
 
 	db.Create(&thread)
 
-	response := map[string]interface{}{"message": "thread added succesfully"}
+	response := map[string]interface{}{"message": "thread added succesfully", "thread": thread}
 	log.Info("A new thread with the name: ", thread.Name, " has been added succesfully")
 
 	return response
@@ -48,7 +48,7 @@ func UpdateThread(thread_id uint, description string, user_id uint) map[string]i
 	db.Save(&thread)
 
 	log.Info("Thread with the id ", thread.ID, " has been updated")
-	return map[string]interface{}{"message": "thread has been updated succesfully"}
+	return map[string]interface{}{"message": "thread has been updated succesfully", "newThread": thread}
 }
 
 func DeleteThread(thread_id uint, user_id uint) map[string]interface{} {
