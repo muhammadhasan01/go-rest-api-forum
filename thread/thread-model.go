@@ -64,6 +64,10 @@ func DeleteThread(thread_id uint, user_id uint) map[string]interface{} {
 		return map[string]interface{}{"ErrorMsg": "You cannot delete other person thread"}
 	}
 
+	var post interfaces.Post
+	db.Where("thread_id = ?", thread_id).Find(&post)
+
+	db.Unscoped().Delete(&post)
 	db.Unscoped().Delete(&thread)
 
 	log.Info("Thread with the id ", thread.ID, " has been deleted")
