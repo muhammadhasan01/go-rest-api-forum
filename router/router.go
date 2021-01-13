@@ -4,7 +4,6 @@ import (
 	"backend-forum/auth"
 	"backend-forum/post"
 	"backend-forum/thread"
-	"backend-forum/user"
 	"fmt"
 	"net/http"
 
@@ -17,9 +16,9 @@ func StartAPI() {
 	r := mux.NewRouter()
 
 	authR := r.PathPrefix("/auth").Subrouter()
-	authR.HandleFunc("/login", user.LoginHandler).Methods("POST")
-	authR.HandleFunc("/register", user.RegisterHandler).Methods("POST")
-	authR.HandleFunc("/logout", auth.Middleware(user.LogoutHandler))
+	authR.HandleFunc("/login", auth.LoginHandler).Methods("POST")
+	authR.HandleFunc("/register", auth.RegisterHandler).Methods("POST")
+	authR.HandleFunc("/logout", auth.Middleware(auth.LogoutHandler))
 
 	threadR := r.PathPrefix("/thread").Subrouter()
 	threadR.HandleFunc("/add", auth.Middleware(thread.AddThreadHandler)).Methods("POST")
