@@ -13,7 +13,7 @@ func AddPost(Post *interfaces.Post) map[string]interface{} {
 
 	db.Create(&Post)
 
-	response := map[string]interface{}{"message": "Post added succesfully"}
+	response := map[string]interface{}{"message": "Post added succesfully", "post": Post}
 	log.Info("A new post with the title: ", Post.Title, " has been added succesfully")
 
 	return response
@@ -48,7 +48,7 @@ func UpdatePost(post_id uint, description string, user_id uint) map[string]inter
 	db.Save(&Post)
 
 	log.Info("Post with the id ", Post.ID, " has been updated")
-	return map[string]interface{}{"message": "Post has been updated succesfully"}
+	return map[string]interface{}{"message": "Post has been updated succesfully", "newPost": Post}
 }
 
 func DeletePost(Post_id uint, user_id uint) map[string]interface{} {
