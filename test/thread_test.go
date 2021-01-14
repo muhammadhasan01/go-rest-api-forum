@@ -42,11 +42,42 @@ func TestGetThread(t *testing.T) {
 		if err != nil {
 			t.Errorf("Error trying to get new request get to /thread/%v: %v", tc.ThreadID, err)
 		}
-		// Sets the path username
+		// Sets the path threadID
 		req = mux.SetURLVars(req, map[string]string{"threadID": tc.ThreadID})
 		// Create http test
 		r := httptest.NewRecorder()
 		h := http.HandlerFunc(thread.GetThreadHandler)
+		h.ServeHTTP(r, req)
+		// Assert the result with the expected result
+		assert.Equal(t, r.Code, tc.ExpectedStatusCode)
+		fmt.Println()
+	}
+}
+
+// TestAddThread is to test getting a thread by a threadID
+// it tests the endpoint POST /thread/add
+func TestAddThread(t *testing.T) {
+	// Create a slice of testcase struct
+	testCase := make([]interfaces.TestStruct, 0)
+	// A correct test case
+	testCase = append(testCase, interfaces.TestStruct{
+		Input:              `{"name":"threadName", "description":"descriptionThread"}`,
+		ExpectedStatusCode: 200,
+	})
+
+	// Check every testcase
+	for _, tc := range testCase {
+		fmt.Println(tc.Input)
+		// Make a request to the /thread/add
+		req, err := http.NewRequest("GET", "/thread/add", bytes.NewBufferString(tc.Input))
+		if err != nil {
+			t.Errorf("Error trying to get new request POST to /thread/add")
+		}
+		// Sets the token for the header
+		req.Header.Set("Token", Token)
+		// Create http test
+		r := httptest.NewRecorder()
+		h := http.HandlerFunc(thread.AddThreadHandler)
 		h.ServeHTTP(r, req)
 		// Assert the result with the expected result
 		assert.Equal(t, r.Code, tc.ExpectedStatusCode)
