@@ -192,7 +192,7 @@ func TestDeletePost(t *testing.T) {
 	testCase := make([]interfaces.TestStruct, 0)
 	// A correct test case
 	testCase = append(testCase, interfaces.TestStruct{
-		PostID:             "12",
+		PostID:             "13",
 		ThreadID:           "7",
 		ExpectedStatusCode: 200,
 	})

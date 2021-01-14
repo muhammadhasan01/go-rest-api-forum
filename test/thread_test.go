@@ -144,7 +144,7 @@ func TestDeleteThread(t *testing.T) {
 	testCase := make([]interfaces.TestStruct, 0)
 	// A correct test case
 	testCase = append(testCase, interfaces.TestStruct{
-		ThreadID:           "11",
+		ThreadID:           "12",
 		ExpectedStatusCode: 200,
 	})
 	// A false test case [id not found]
