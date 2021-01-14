@@ -3,8 +3,9 @@ package migrations
 import (
 	"backend-forum/interfaces"
 	"backend-forum/utils"
+	"math/rand"
 
-	"github.com/bxcodec/faker/v3"
+	faker "github.com/bxcodec/faker/v3"
 )
 
 // CreateAccounts is used to create fake accounts
@@ -13,6 +14,13 @@ func CreateAccounts() {
 	defer db.Close()
 
 	users := []interfaces.User{}
+
+	users = append(users, interfaces.User{
+		Username: "hasan",
+		Email:    "hasan@gmail.com",
+		Password: "password",
+		Role:     "SUPERUSER",
+	})
 	for i := 0; i < 100; i++ {
 		username := faker.Username()
 		email := faker.Email()
@@ -30,5 +38,47 @@ func CreateAccounts() {
 	for _, user := range users {
 		user.Password = utils.HashPassword(user.Password)
 		db.Create(&user)
+	}
+}
+
+// CreateThreads is used to create fake thread
+func CreateThreads() {
+	db := utils.ConnectDB()
+	defer db.Close()
+	for i := 0; i < 100; i++ {
+		username := "hasan"
+		userID := uint(1)
+		name := faker.Word()
+		description := faker.Sentence()
+		thread := interfaces.Thread{
+			Username:    username,
+			UserID:      userID,
+			Name:        name,
+			Description: description,
+		}
+		db.Create(&thread)
+	}
+}
+
+// CreatePosts is used to create fake thread
+func CreatePosts() {
+	db := utils.ConnectDB()
+	defer db.Close()
+	for i := 0; i < 100; i++ {
+		min := 1
+		max := 100
+		username := "hasan"
+		userID := uint(1)
+		threadID := uint(rand.Intn(max-min) + min)
+		title := faker.Word()
+		description := faker.Sentence()
+		post := interfaces.Post{
+			Username:    username,
+			UserID:      userID,
+			ThreadID:    threadID,
+			Title:       title,
+			Description: description,
+		}
+		db.Create(&post)
 	}
 }
