@@ -184,3 +184,67 @@ func TestUpdatePost(t *testing.T) {
 		fmt.Println()
 	}
 }
+
+// TestDeletePost is to test deleting a post by a threadID and postID
+// it tests the endpoint DELETE /thread/{threadID}/post/{postID}
+func TestDeletePost(t *testing.T) {
+	// Create a slice of testcase struct
+	testCase := make([]interfaces.TestStruct, 0)
+	// A correct test case
+	testCase = append(testCase, interfaces.TestStruct{
+		PostID:             "12",
+		ThreadID:           "7",
+		ExpectedStatusCode: 200,
+	})
+	// A false test case [cannot delete other user post]
+	testCase = append(testCase, interfaces.TestStruct{
+		PostID:             "7",
+		ThreadID:           "7",
+		ExpectedStatusCode: 400,
+	})
+	// A false test case [thread ID not found]
+	testCase = append(testCase, interfaces.TestStruct{
+		PostID:             "7",
+		ThreadID:           "0",
+		ExpectedStatusCode: 400,
+	})
+	// A false test case [thread ID not an integer]
+	testCase = append(testCase, interfaces.TestStruct{
+		PostID:             "7",
+		ThreadID:           "notInteger",
+		ExpectedStatusCode: 400,
+	})
+	// A false test case [post ID not found]
+	testCase = append(testCase, interfaces.TestStruct{
+		PostID:             "0",
+		ThreadID:           "7",
+		ExpectedStatusCode: 400,
+	})
+	// A false test case [post ID not an integer]
+	testCase = append(testCase, interfaces.TestStruct{
+		PostID:             "notInteger",
+		ThreadID:           "7",
+		ExpectedStatusCode: 400,
+	})
+
+	// Check every testcase
+	for _, tc := range testCase {
+		fmt.Println(tc.ThreadID, tc.PostID)
+		// Make a request to the /thread/{threadID}/post/add
+		req, err := http.NewRequest("PUT", fmt.Sprintf("/thread/%v/post/%v", tc.ThreadID, tc.PostID), bytes.NewBufferString(""))
+		if err != nil {
+			t.Errorf("Error trying to get new request get to /thread/%v/post/%v: %v", tc.ThreadID, tc.PostID, err)
+		}
+		// Sets the path threadID
+		req = mux.SetURLVars(req, map[string]string{"threadID": tc.ThreadID, "postID": tc.PostID})
+		// Sets the token for the header
+		req.Header.Set("Token", Token)
+		// Create http test
+		r := httptest.NewRecorder()
+		h := http.HandlerFunc(post.DeletePostHandler)
+		h.ServeHTTP(r, req)
+		// Assert the result with the expected result
+		assert.Equal(t, r.Code, tc.ExpectedStatusCode)
+		fmt.Println()
+	}
+}
