@@ -3,18 +3,41 @@ package post
 import (
 	"backend-forum/interfaces"
 	"backend-forum/utils"
+	"errors"
 
 	log "github.com/sirupsen/logrus"
 )
 
-func AddPost(Post *interfaces.Post) map[string]interface{} {
+// AddPost is a functio to add a post
+func AddPost(threadID uint, userID uint, username string, title string, description string) AddPostResponse {
 	db := utils.ConnectDB()
 	defer db.Close()
 
-	db.Create(&Post)
+	// Make the post
+	post := interfaces.Post{
+		ThreadID:    threadID,
+		UserID:      userID,
+		Username:    username,
+		Title:       title,
+		Description: description,
+	}
 
-	response := map[string]interface{}{"message": "Post added succesfully", "post": Post}
-	log.Info("A new post with the title: ", Post.Title, " has been added succesfully")
+	// Add the post to the database
+	db.Create(&post)
+
+	// Log the info
+	log.WithFields(log.Fields{
+		"postID":   post.ID,
+		"username": username,
+	}).Info("A user has just created a new post")
+
+	// Create the response and return it
+	response := AddPostResponse{
+		ID:       post.ID,
+		Message:  "post has been added successfully!",
+		Username: username,
+		Title:    title,
+	}
 
 	return response
 }
@@ -40,24 +63,42 @@ func GetPost(postID uint) (PostResponse, error) {
 	return response, nil
 }
 
-func UpdatePost(postID uint, description string, user_id uint) map[string]interface{} {
+// UpdatePost is a function to update a post
+func UpdatePost(postID uint, title string, description string, username string) (UpdatePostResponse, error) {
 	db := utils.ConnectDB()
 	defer db.Close()
 
-	var Post interfaces.Post
-	if err := db.First(&Post, postID).Error; err != nil {
-		return map[string]interface{}{"ErrorMsg": "Post ID not found"}
+	// Check whether the post exists
+	var post interfaces.Post
+	if err := db.First(&post, postID).Error; err != nil {
+		return UpdatePostResponse{}, errors.New("post ID not found")
 	}
 
-	if Post.UserID != user_id {
-		return map[string]interface{}{"ErrorMsg": "You cannot change description of other person Post"}
+	// Check whether user can change the post or not
+	if post.Username != username {
+		return UpdatePostResponse{}, errors.New("You cannot change description of other person post")
 	}
 
-	Post.Description = description
-	db.Save(&Post)
+	// Update the post and save it
+	post.Title = title
+	post.Description = description
+	db.Save(&post)
 
-	log.Info("Post with the id ", Post.ID, " has been updated")
-	return map[string]interface{}{"message": "Post has been updated succesfully", "newPost": Post}
+	// Log the info
+	log.WithFields(log.Fields{
+		"postID":   post.ID,
+		"username": username,
+	}).Info("A user has just updated a post")
+
+	// Create the response and return it
+	response := UpdatePostResponse{
+		Message:     "post has been updated successfully!",
+		Username:    username,
+		Title:       title,
+		Description: description,
+	}
+
+	return response, nil
 }
 
 func DeletePost(postID uint, user_id uint) map[string]interface{} {
