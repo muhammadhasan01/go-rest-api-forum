@@ -100,6 +100,7 @@ func UpdateThread(threadID uint, name string, description string, username strin
 	return response, nil
 }
 
+// DeleteThread is a function to delete a thread from a given threadID and username
 func DeleteThread(threadID uint, username string) (DeleteThreadResponse, error) {
 	db := utils.ConnectDB()
 	defer db.Close()
