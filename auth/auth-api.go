@@ -8,26 +8,35 @@ import (
 	"backend-forum/utils"
 )
 
-type loginBody struct {
-	Username string
-	Password string
-}
-
-type registerBody struct {
-	Username string
-	Email    string
-	Password string
-}
-
+// @Title Login as a user.
+// @Description Handling a user to login, and creates a JWT Token for the user.
+// @Param  user  body  LoginBody  true  "Info of a user (username and password)."
+// @Success  202  object  LoginResponse  "LoginResponse JSON"
+// @Failure  400  object  ErrorResponse  "ErrorResponse JSON"
+// @Resource auth
+// @Route /auth/login [post]
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
+	// Gets the data in the request body
 	body, err := ioutil.ReadAll(r.Body)
 	utils.HandleErr(err)
 
-	var formattedBody loginBody
+	// Format the data in the request body
+	var formattedBody LoginBody
 	err = json.Unmarshal(body, &formattedBody)
 	utils.HandleErr(err)
-	response := Login(formattedBody.Username, formattedBody.Password)
+	response, err := Login(formattedBody.Username, formattedBody.Password)
 
+	// Handle if any bad request error occurs
+	if err != nil {
+		utils.HandleErr(err)
+		errResponse := ErrorResponse{Msg: err.Error()}
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(errResponse)
+		return
+	}
+
+	// Set status to Accepted
+	w.WriteHeader(http.StatusAccepted)
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -35,7 +44,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	utils.HandleErr(err)
 
-	var formattedBody registerBody
+	var formattedBody RegisterBody
 	err = json.Unmarshal(body, &formattedBody)
 	utils.HandleErr(err)
 

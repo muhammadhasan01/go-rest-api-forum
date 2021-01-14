@@ -3,30 +3,48 @@ package auth
 import (
 	"backend-forum/interfaces"
 	"backend-forum/utils"
+	"errors"
 
 	log "github.com/sirupsen/logrus"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
-func Login(username string, pass string) map[string]interface{} {
+// Login handles the user to login
+// it checks the username and its password
+// also gives out token
+func Login(username string, pass string) (LoginResponse, error) {
 	db := utils.ConnectDB()
 	defer db.Close()
 
+	// Check the username
 	user := &interfaces.User{}
 	if db.Where("username = ? ", username).First(&user).RecordNotFound() {
-		return map[string]interface{}{"message": "User not found"}
+		return LoginResponse{}, errors.New("user not found")
 	}
 
+	// Check the password
 	passErr := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(pass))
 	if passErr == bcrypt.ErrMismatchedHashAndPassword && passErr != nil {
-		return map[string]interface{}{"message": "Wrong password"}
+		return LoginResponse{}, errors.New("password is wrong")
 	}
 
+	// Check the token first
 	token := GetToken(user)
 
-	log.Info("User with the username:", username, " has just logged in")
-	return map[string]interface{}{"message": "you have been logged in succesfully!", "token": token}
+	if CheckTokenInDB(token) {
+		return LoginResponse{}, errors.New("User has already logged in")
+	}
+
+	// Creates a new record in the "whitelist"
+	auth := &interfaces.Auth{UserID: user.ID, Token: token}
+	db.Create(&auth)
+
+	log.WithFields(log.Fields{
+		"username": username,
+	}).Info("A user has just logged in")
+	// log.Info("User with the username:", username, " has just logged in")
+	return LoginResponse{Message: "you have been logged in succesfully!", Token: token}, nil
 }
 
 func Register(username string, email string, pass string) map[string]interface{} {
@@ -37,7 +55,11 @@ func Register(username string, email string, pass string) map[string]interface{}
 	user := &interfaces.User{Username: username, Email: email, Password: generatedPassword, Role: "USER"}
 
 	if !db.Where("username = ? ", username).First(&user).RecordNotFound() {
-		return map[string]interface{}{"message": "username has already been taken"}
+		return map[string]interface{}{"success": false, "message": "username has already been taken"}
+	}
+
+	if !db.Where("email = ? ", email).First(&user).RecordNotFound() {
+		return map[string]interface{}{"success": false, "message": "email has already been taken"}
 	}
 
 	db.Create(&user)
