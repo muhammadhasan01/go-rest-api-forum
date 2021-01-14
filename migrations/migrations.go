@@ -5,6 +5,8 @@ import (
 	"backend-forum/utils"
 )
 
+// Migrate is used to migrate the type struct
+// to the database
 func Migrate() {
 	Auth := &interfaces.Auth{}
 	User := &interfaces.User{}
