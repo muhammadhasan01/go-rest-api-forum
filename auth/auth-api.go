@@ -40,15 +40,31 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+// @Title Register a user.
+// @Description Handling a user to register.
+// @Param  user  body  RegisterBody  true  "Info of a user (username, email, password)."
+// @Success  200  object  RegisterResponse  "RegisterResponse JSON"
+// @Failure  400  object  ErrorResponse  "ErrorResponse JSON"
+// @Resource auth
+// @Route /auth/register [post]
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
+	// Gets the data in the request body
 	body, err := ioutil.ReadAll(r.Body)
 	utils.HandleErr(err)
 
+	// Format the data in the request body
 	var formattedBody RegisterBody
 	err = json.Unmarshal(body, &formattedBody)
 	utils.HandleErr(err)
 
-	response := Register(formattedBody.Username, formattedBody.Email, formattedBody.Password)
+	response, err := Register(formattedBody.Username, formattedBody.Email, formattedBody.Password)
+	if err != nil {
+		utils.HandleErr(err)
+		errResponse := ErrorResponse{Msg: err.Error()}
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(errResponse)
+		return
+	}
 
 	json.NewEncoder(w).Encode(response)
 }
