@@ -42,15 +42,3 @@ type Post struct {
 	Title       string
 	Description string
 }
-
-// ErrorMessage is used as a response
-// whenever an error occurs at some endpoint
-type ErrorMessage struct {
-	ErrorMsg string `json:"ErrorMsg"`
-}
-
-// SuccessMessage is used as a response
-// whenever a request is succesfully fulfilled
-type SuccessMessage struct {
-	SuccessMsg string `json:"message"`
-}
