@@ -19,16 +19,24 @@ func AddThread(thread *interfaces.Thread) map[string]interface{} {
 	return response
 }
 
-func GetThread(thread_id uint) (interfaces.Thread, error) {
+// GetThread is a function to get a thread from a thread id
+func GetThread(thread_id uint) (ThreadResponse, error) {
 	db := utils.ConnectDB()
 	defer db.Close()
 
 	var thread interfaces.Thread
 	if err := db.First(&thread, thread_id).Error; err != nil {
-		return thread, err
+		return ThreadResponse{}, err
 	}
 
-	return thread, nil
+	response := ThreadResponse{
+		ID:          thread.ID,
+		Username:    thread.Username,
+		Name:        thread.Name,
+		Description: thread.Description,
+	}
+
+	return response, nil
 }
 
 func UpdateThread(thread_id uint, description string, user_id uint) map[string]interface{} {
