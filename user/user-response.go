@@ -6,26 +6,10 @@ type UpdateBody struct {
 	Password string `json:"password" example:"some_new_password"`
 }
 
-// RegisterBody is the type that needs
-// to be in a body request when user wants to register
-type RegisterBody struct {
-	Username string `json:"username" example:"tester"`
-	Email    string `json:"email" example:"tester@gmail.com"`
-	Password string `json:"password" example:"some_password"`
-}
-
 // UserResponse is the type that will
 // be responsed to a user GET request
 type UserResponse struct {
 	UserID   uint   `json:"user_id" example:"205"`
-	Username string `json:"username" example:"tester"`
-	Email    string `json:"email" example:"tester@gmail.com"`
-}
-
-// RegisterResponse is the type that will
-// be responded to a register request
-type RegisterResponse struct {
-	Message  string `json:"message" example:"user registered successfully!"`
 	Username string `json:"username" example:"tester"`
 	Email    string `json:"email" example:"tester@gmail.com"`
 }
@@ -41,6 +25,13 @@ type LogoutResponse struct {
 // be responded to an update request
 type UpdateResponse struct {
 	Message  string `json:"message" example:"user has been updated with the new password"`
+	Username string `json:"username" example:"tester"`
+}
+
+// DeleteResponse is the type that will
+// be responded to an delete request
+type DeleteResponse struct {
+	Message  string `json:"message" example:"user has been deleted successfully!"`
 	Username string `json:"username" example:"tester"`
 }
 

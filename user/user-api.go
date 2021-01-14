@@ -10,7 +10,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// @Title Gets as a user from a username.
+// @Title Gets as a user.
 // @Description Gets user info from a specific username.
 // @Param  username  path  string  true  "username of the user in the path"
 // @Success  200  object  UserResponse  "UserResponse JSON"
@@ -73,12 +73,31 @@ func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+// @Title Deletes a user.
+// @Description Delete a user from the username path.
+// @Param  username  path  string  true  "username of the user in the path"
+// @Success  200  object  DeleteResponse  "DeleteResponse JSON"
+// @Failure  400  object  ErrorResponse  "ErrorResponse JSON"
+// @Resource user
+// @Route /user/{username} [delete]
 func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
+	// Gets claims
 	claims, _ := auth.GetClaims(r)
 	vars := mux.Vars(r)
+
+	// Gets the username from the path
 	key := vars["username"]
 
-	response := DeleteUser(key, claims["username"].(string))
+	response, err := DeleteUser(key, claims["username"].(string))
+
+	// Handle if any bad request error occurs
+	if err != nil {
+		utils.HandleErr(err)
+		errResponse := ErrorResponse{Msg: err.Error()}
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(errResponse)
+		return
+	}
 
 	json.NewEncoder(w).Encode(response)
 }
