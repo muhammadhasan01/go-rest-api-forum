@@ -12,8 +12,8 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
-const CtxKey = "auth-token"
-
+// Middleware is a decorater function
+// that checks the user authorization
 func Middleware(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Header["Token"] != nil {
@@ -29,7 +29,7 @@ func Middleware(next http.HandlerFunc) http.HandlerFunc {
 				return
 			}
 
-			if !checkTokenInDB(token.Raw) {
+			if !CheckTokenInDB(token.Raw) {
 				utils.HandleErr(errors.New("Token not found in whitelist"))
 				fmt.Fprintf(w, "Token not found in whitelist")
 				return
@@ -38,11 +38,14 @@ func Middleware(next http.HandlerFunc) http.HandlerFunc {
 			next(w, r)
 			return
 		}
+		w.WriteHeader(http.StatusUnauthorized)
 		log.Warn("User not authorized")
 		fmt.Fprintf(w, "Not Authorized")
 	})
 }
 
+// ExtractToken is a function to
+// get a token from the http request
 func ExtractToken(r *http.Request) (*jwt.Token, error) {
 	token, err := jwt.Parse(r.Header["Token"][0], func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -54,6 +57,8 @@ func ExtractToken(r *http.Request) (*jwt.Token, error) {
 	return token, err
 }
 
+// GetClaims is a function that gets
+// the token claims from the http request
 func GetClaims(r *http.Request) (jwt.MapClaims, bool) {
 	tokenStr := r.Header["Token"][0]
 
@@ -78,6 +83,8 @@ func GetClaims(r *http.Request) (jwt.MapClaims, bool) {
 	}
 }
 
+// GetToken is a function to make a JWT Token
+// form a specific userID and username
 func GetToken(user *interfaces.User) string {
 	tokenContent := jwt.MapClaims{
 		"user_id":  user.ID,
@@ -87,15 +94,12 @@ func GetToken(user *interfaces.User) string {
 	token, err := jwtToken.SignedString([]byte(utils.GetEnv("API_SECRET")))
 	utils.HandleErr(err)
 
-	db := utils.ConnectDB()
-	defer db.Close()
-	auth := &interfaces.Auth{UserID: user.ID, Token: token}
-	db.Create(&auth)
-
 	return token
 }
 
-func checkTokenInDB(token string) bool {
+// CheckTokenInDB is a function
+// to check whether a token is already in a whitelist or not
+func CheckTokenInDB(token string) bool {
 	db := utils.ConnectDB()
 	defer db.Close()
 
