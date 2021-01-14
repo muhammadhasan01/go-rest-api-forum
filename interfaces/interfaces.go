@@ -48,4 +48,5 @@ type Post struct {
 type TestStruct struct {
 	Input              string
 	ExpectedStatusCode int
+	Username           string
 }
