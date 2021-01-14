@@ -88,3 +88,41 @@ func TestUpdateUser(t *testing.T) {
 		fmt.Println()
 	}
 }
+
+// TestDeleteUser is to test deleting a user by its username
+// it tests the endpoint /user/{username}
+func TestDeleteUser(t *testing.T) {
+	// Create a slice of testcase struct
+	testCase := make([]interfaces.TestStruct, 0)
+	// A false test case [cannot delete other person user]
+	testCase = append(testCase, interfaces.TestStruct{
+		Username:           "mhasan01",
+		ExpectedStatusCode: 400,
+	})
+	// A correct test case
+	testCase = append(testCase, interfaces.TestStruct{
+		Username:           "tester",
+		ExpectedStatusCode: 200,
+	})
+
+	// Check every testcase
+	for _, tc := range testCase {
+		fmt.Println(tc.Username)
+		// Make a request to the /user/{username}
+		req, err := http.NewRequest("DELETE", fmt.Sprintf("/user/%v", tc.Username), bytes.NewBufferString(""))
+		if err != nil {
+			t.Errorf("Error trying to get new request DELETE to /user/%v: %v", tc.Username, err)
+		}
+		// Sets the path username
+		req = mux.SetURLVars(req, map[string]string{"username": tc.Username})
+		// Sets the token for the header
+		req.Header.Set("Token", Token)
+		// Create http test
+		r := httptest.NewRecorder()
+		h := http.HandlerFunc(user.DeleteUserHandler)
+		h.ServeHTTP(r, req)
+		// Assert the result with the expected result
+		assert.Equal(t, r.Code, tc.ExpectedStatusCode)
+		fmt.Println()
+	}
+}
