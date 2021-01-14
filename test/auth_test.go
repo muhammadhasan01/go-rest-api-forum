@@ -16,28 +16,28 @@ import (
 // it tests the endpoint /auth/register
 func TestRegister(t *testing.T) {
 	// Create a slice of testcase struct
-	testCase := make([]interfaces.TestBody, 0)
+	testCase := make([]interfaces.TestStruct, 0)
 	// A correct test case
-	testCase = append(testCase, interfaces.TestBody{
-		InputBodyJSON:      `{"username":"NewTester", "email":"NewTester@gmail.com", "password":"tester"}`,
+	testCase = append(testCase, interfaces.TestStruct{
+		Input:              `{"username":"NewTester", "email":"NewTester@gmail.com", "password":"tester"}`,
 		ExpectedStatusCode: 200,
 	})
 	// A false test case [username has already been taken]
-	testCase = append(testCase, interfaces.TestBody{
-		InputBodyJSON:      `{"username":"tester", "email":"NewTester@gmail.com", "password":"tester"}`,
+	testCase = append(testCase, interfaces.TestStruct{
+		Input:              `{"username":"tester", "email":"NewTester@gmail.com", "password":"tester"}`,
 		ExpectedStatusCode: 400,
 	})
 	// A false test case [email has already been taken]
-	testCase = append(testCase, interfaces.TestBody{
-		InputBodyJSON:      `{"username":"VeryNewTester", "email":"tester@gmail.com", "password":"tester"}`,
+	testCase = append(testCase, interfaces.TestStruct{
+		Input:              `{"username":"VeryNewTester", "email":"tester@gmail.com", "password":"tester"}`,
 		ExpectedStatusCode: 400,
 	})
 
 	// Check every testcase
 	for _, tc := range testCase {
-		fmt.Println(tc.InputBodyJSON)
+		fmt.Println(tc.Input)
 		// Make a request to the /auth/register
-		req, err := http.NewRequest("POST", "/auth/register", bytes.NewBufferString(tc.InputBodyJSON))
+		req, err := http.NewRequest("POST", "/auth/register", bytes.NewBufferString(tc.Input))
 		if err != nil {
 			t.Errorf("Error trying to get new request post to /auth/register: %v", err)
 		}
@@ -55,33 +55,33 @@ func TestRegister(t *testing.T) {
 // endpoint (/auth/login)
 func TestLogin(t *testing.T) {
 	// Create a slice of testcase struct
-	testCase := make([]interfaces.TestBody, 0)
+	testCase := make([]interfaces.TestStruct, 0)
 	// A correct test case
-	testCase = append(testCase, interfaces.TestBody{
-		InputBodyJSON:      `{"username":"tester", "password":"tester"}`,
+	testCase = append(testCase, interfaces.TestStruct{
+		Input:              `{"username":"tester", "password":"tester"}`,
 		ExpectedStatusCode: 202,
 	})
 	// A false test case [username not found]
-	testCase = append(testCase, interfaces.TestBody{
-		InputBodyJSON:      `{"username":"notTester", "password":"tester"}`,
+	testCase = append(testCase, interfaces.TestStruct{
+		Input:              `{"username":"notTester", "password":"tester"}`,
 		ExpectedStatusCode: 400,
 	})
 	// A false test case [password is wrong]
-	testCase = append(testCase, interfaces.TestBody{
-		InputBodyJSON:      `{"username":"tester", "password":"notPasswordTester"}`,
+	testCase = append(testCase, interfaces.TestStruct{
+		Input:              `{"username":"tester", "password":"notPasswordTester"}`,
 		ExpectedStatusCode: 400,
 	})
 	// A false test case [user cannot login twice]
-	testCase = append(testCase, interfaces.TestBody{
-		InputBodyJSON:      `{"username":"tester", "password":"tester"}`,
+	testCase = append(testCase, interfaces.TestStruct{
+		Input:              `{"username":"tester", "password":"tester"}`,
 		ExpectedStatusCode: 400,
 	})
 
 	// Check every testcase
 	for _, tc := range testCase {
-		fmt.Println(tc.InputBodyJSON)
+		fmt.Println(tc.Input)
 		// Make a request to the /auth/login
-		req, err := http.NewRequest("POST", "/auth/login", bytes.NewBufferString(tc.InputBodyJSON))
+		req, err := http.NewRequest("POST", "/auth/login", bytes.NewBufferString(tc.Input))
 		if err != nil {
 			t.Errorf("Error trying to get new request post to /auth/login: %v", err)
 		}
@@ -99,18 +99,18 @@ func TestLogin(t *testing.T) {
 // endpoint (/auth/logout)
 func TestLogout(t *testing.T) {
 	// Create a slice of testcase struct
-	testCase := make([]interfaces.TestBody, 0)
+	testCase := make([]interfaces.TestStruct, 0)
 	// A correct test case
-	testCase = append(testCase, interfaces.TestBody{
-		InputBodyJSON:      `{"username":"tester", "password":"tester"}`,
+	testCase = append(testCase, interfaces.TestStruct{
+		Input:              `{"username":"tester", "password":"tester"}`,
 		ExpectedStatusCode: 200,
 	})
 
 	// Check every testcase
 	for _, tc := range testCase {
-		fmt.Println(tc.InputBodyJSON)
+		fmt.Println(tc.Input)
 		// Make a request to the /auth/login
-		req, err := http.NewRequest("POST", "/auth/logout", bytes.NewBufferString(tc.InputBodyJSON))
+		req, err := http.NewRequest("GET", "/auth/logout", bytes.NewBufferString(tc.Input))
 		if err != nil {
 			t.Errorf("Error trying to get new request post to /auth/logout: %v", err)
 		}

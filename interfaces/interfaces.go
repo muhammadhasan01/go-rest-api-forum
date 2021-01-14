@@ -45,7 +45,7 @@ type Post struct {
 
 // TestBody struct is used for testing http request
 // with the data given in the body
-type TestBody struct {
-	InputBodyJSON      string
+type TestStruct struct {
+	Input              string
 	ExpectedStatusCode int
 }
