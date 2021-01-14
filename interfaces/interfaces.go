@@ -42,3 +42,9 @@ type Post struct {
 	Title       string
 	Description string
 }
+
+// ErrorMessage is used as a response
+// whenever an error occurs at some endpoint
+type ErrorMessage struct {
+	ErrorMsg string `json:"ErrorMsg"`
+}
