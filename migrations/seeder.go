@@ -7,6 +7,7 @@ import (
 	"github.com/bxcodec/faker/v3"
 )
 
+// CreateAccounts is used to create fake accounts
 func CreateAccounts() {
 	db := utils.ConnectDB()
 	defer db.Close()
