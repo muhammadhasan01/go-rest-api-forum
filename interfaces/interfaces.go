@@ -1,7 +1,9 @@
+// interfaces is a package for global defined struct
 package interfaces
 
 import "github.com/jinzhu/gorm"
 
+// User struct defines user schema in the database
 type User struct {
 	gorm.Model
 
@@ -11,6 +13,8 @@ type User struct {
 	Role     string
 }
 
+// Auth struct is used for the 'whitelist' database
+// it is used to handle logout
 type Auth struct {
 	gorm.Model
 
@@ -18,6 +22,7 @@ type Auth struct {
 	Token  string
 }
 
+// Thread struct defines thread schema in the database
 type Thread struct {
 	gorm.Model
 
@@ -27,6 +32,7 @@ type Thread struct {
 	Description string
 }
 
+// Post struct defines post schema in the database
 type Post struct {
 	gorm.Model
 
@@ -37,6 +43,14 @@ type Post struct {
 	Description string
 }
 
+// ErrorMessage is used as a response
+// whenever an error occurs at some endpoint
 type ErrorMessage struct {
-	ErrorMsg string
+	ErrorMsg string `json:"ErrorMsg"`
+}
+
+// SuccessMessage is used as a response
+// whenever a request is succesfully fulfilled
+type SuccessMessage struct {
+	SuccessMsg string `json:"message"`
 }
