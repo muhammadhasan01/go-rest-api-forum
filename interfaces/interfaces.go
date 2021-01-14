@@ -43,8 +43,9 @@ type Post struct {
 	Description string
 }
 
-// ErrorMessage is used as a response
-// whenever an error occurs at some endpoint
-type ErrorMessage struct {
-	ErrorMsg string `json:"ErrorMsg"`
+// TestBody struct is used for testing http request
+// with the data given in the body
+type TestBody struct {
+	InputBodyJSON      string
+	ExpectedStatusCode int
 }
