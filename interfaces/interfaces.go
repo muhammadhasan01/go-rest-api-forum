@@ -43,11 +43,12 @@ type Post struct {
 	Description string
 }
 
-// TestBody struct is used for testing http request
+// TestStruct struct is used for testing http request
 // with the data given in the body
 type TestStruct struct {
 	Input              string
 	ExpectedStatusCode int
 	Username           string
 	ThreadID           string
+	PostID             string
 }
