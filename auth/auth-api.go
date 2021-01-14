@@ -69,9 +69,21 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+// @Title Logout a user.
+// @Description Handling a user to logout.
+// @Param  token  header  string  true  "JWT Token received when logged in"
+// @Success  200  object  LogoutResponse  "LogoutResponse JSON"
+// @Failure  400  object  ErrorResponse  "ErrorResponse JSON"
+// @Resource auth
+// @Route /auth/logout [get]
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+	// Gets the claim
 	claims, _ := GetClaims(r)
+
+	// Gets the token in the header
+	// ! Check if there token handler in the middleware
 	token := r.Header["Token"][0]
+
 	response := Logout(claims["user_id"].(uint), token, claims["username"].(string))
 	json.NewEncoder(w).Encode(response)
 }

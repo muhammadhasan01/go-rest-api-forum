@@ -30,8 +30,15 @@ type RegisterResponse struct {
 	Email    string `json:"email" example:"tester@gmail.com"`
 }
 
+// LogoutResponse is the type that will
+// be responded to a logout request
+type LogoutResponse struct {
+	Message  string `json:"message" example:"you have been logged out successfully"`
+	Username string `json:"username" example:"tester"`
+}
+
 // ErrorResponse is the response
 // to give when an error occurs
 type ErrorResponse struct {
-	Msg string `json:"error" example:"username has already been taken" description:"error message"`
+	Msg string `json:"error" example:"something wrong happened"`
 }

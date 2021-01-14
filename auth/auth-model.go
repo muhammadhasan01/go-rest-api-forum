@@ -90,14 +90,27 @@ func Register(username string, email string, pass string) (RegisterResponse, err
 	return response, nil
 }
 
-func Logout(user_id uint, token string, username string) map[string]interface{} {
+// Logout function is to handle when a user logout
+// it deletes the record database in the whitelist
+func Logout(user_id uint, token string, username string) LogoutResponse {
 	db := utils.ConnectDB()
 	defer db.Close()
 
+	// Deletes the record in the database whitelist
 	auth := &interfaces.Auth{}
 	db.Where(map[string]interface{}{"user_id": user_id, "token": token}).First(&auth)
 	db.Unscoped().Delete(&auth)
 
-	log.Info("User with the username:", username, " has just logged out")
-	return map[string]interface{}{"message": "you have been logout successfully!"}
+	// Logs out the info and return the response
+	log.WithFields(log.Fields{
+		"user_id":  user_id,
+		"username": username,
+	}).Info("A user has just logged out")
+
+	response := LogoutResponse{
+		Message:  "you have been logout successfully!",
+		Username: username,
+	}
+
+	return response
 }
