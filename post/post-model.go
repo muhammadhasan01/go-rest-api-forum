@@ -101,21 +101,36 @@ func UpdatePost(postID uint, title string, description string, username string) 
 	return response, nil
 }
 
-func DeletePost(postID uint, user_id uint) map[string]interface{} {
+// DeletePost is a function to delete a post
+func DeletePost(postID uint, username string) (DeletePostResponse, error) {
 	db := utils.ConnectDB()
 	defer db.Close()
 
-	var Post interfaces.Post
-	if err := db.First(&Post, postID).Error; err != nil {
-		return map[string]interface{}{"ErrorMsg": "Post ID not found"}
+	// Check whether the post exists
+	var post interfaces.Post
+	if err := db.First(&post, postID).Error; err != nil {
+		return DeletePostResponse{}, errors.New("post ID not found")
 	}
 
-	if Post.UserID != user_id {
-		return map[string]interface{}{"ErrorMsg": "You cannot delete other person Post"}
+	if post.Username != username {
+		return DeletePostResponse{}, errors.New("You cannot change other person post")
 	}
 
-	db.Unscoped().Delete(&Post)
+	// Deletes the post
+	db.Unscoped().Delete(&post)
 
-	log.Info("Post with the id ", Post.ID, " has been deleted")
-	return map[string]interface{}{"message": "Post has been deleted succesfully"}
+	// Log the info
+	log.WithFields(log.Fields{
+		"postID":   post.ID,
+		"username": username,
+	}).Info("A user has just deleted a post")
+
+	// Create the response and return it
+	response := DeletePostResponse{
+		Message:  "post has been deleted successfully!",
+		ID:       post.ID,
+		Username: username,
+	}
+
+	return response, nil
 }

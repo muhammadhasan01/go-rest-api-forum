@@ -2,7 +2,6 @@ package post
 
 import (
 	"backend-forum/auth"
-	"backend-forum/interfaces"
 	"backend-forum/utils"
 	"encoding/json"
 	"io/ioutil"
@@ -12,8 +11,9 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// @Title Gets as a post.
+// @Title Gets a post.
 // @Description Gets a post from a post ID.
+// @Param  threadID  path  int  true  "Thread ID from the path"
 // @Param  postID  path  int  true  "postID of the post in the path"
 // @Success  200  object  PostResponse  "ThreadResponse JSON"
 // @Failure  400  object  ErrorResponse  "ErrorResponse JSON"
@@ -45,9 +45,10 @@ func GetPostHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-// @Title Adds as a post.
+// @Title Adds a post.
 // @Description Adds a post from a post ID.
 // @Param  post  body  PostBody  true  "Info of the post (title, description)"
+// @Param  threadID  path  int  true  "Thread ID from the path"
 // @Success  200  object  AddPostResponse  "AddPostResponse JSON"
 // @Failure  400  object  ErrorResponse  "ErrorResponse JSON"
 // @Resource post
@@ -87,9 +88,11 @@ func AddPostHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-// @Title Updates as a post.
+// @Title Updates a post.
 // @Description Updates a post from a post ID.
 // @Param  post  body  ThreadBody  true  "Info of the post (title, description)"
+// @Param  threadID  path  int  true  "Thread ID from the path"
+// @Param  postID  path  int  true  "Post ID from the path"
 // @Success  200  object  UpdatePostResponse  "UpdatePostResponse JSON"
 // @Failure  400  object  ErrorResponse  "ErrorResponse JSON"
 // @Resource post
@@ -136,29 +139,39 @@ func UpdatePostHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+// @Title Deletes a post.
+// @Description Deletes a post from a post ID.
+// @Param  threadID  path  int  true  "Thread ID from the path"
+// @Param  postID  path  int  true  "Post ID from the path"
+// @Success  200  object  DeletePostResponse  "DeletePostResponse JSON"
+// @Failure  400  object  ErrorResponse  "ErrorResponse JSON"
+// @Resource thread
+// @Route /thread/{threadID}/post/{postID} [delete]
 func DeletePostHandler(w http.ResponseWriter, r *http.Request) {
+	// Gets claim
 	claims, _ := auth.GetClaims(r)
 	vars := mux.Vars(r)
 
+	// Gets the threadID
 	_, err := strconv.ParseUint(vars["threadID"], 10, 64)
-
 	if err != nil {
-		utils.HandleErr(err)
-		msg := interfaces.ErrorMessage{ErrorMsg: "Thread ID cannot be converted into an integer"}
-		json.NewEncoder(w).Encode(msg)
+		handleError(w, err)
 		return
 	}
 
+	// Gets the postID
 	postID, err := strconv.ParseUint(vars["postID"], 10, 64)
-
 	if err != nil {
-		utils.HandleErr(err)
-		msg := interfaces.ErrorMessage{ErrorMsg: "ID cannot be converted into an integer"}
-		json.NewEncoder(w).Encode(msg)
+		handleError(w, err)
 		return
 	}
 
-	response := DeletePost(uint(postID), claims["user_id"].(uint))
+	// Gets the response
+	response, err := DeletePost(uint(postID), claims["username"].(string))
+	if err != nil {
+		handleError(w, err)
+		return
+	}
 
 	json.NewEncoder(w).Encode(response)
 }
