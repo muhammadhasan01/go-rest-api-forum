@@ -10,7 +10,7 @@ type ThreadBody struct {
 // ThreadResponse is the type that will
 // be responsed to a thread GET request
 type ThreadResponse struct {
-	ID          uint   `json:"thread_id" example:"45"`
+	ID          uint   `json:"id" example:"45"`
 	Username    string `json:"username" example:"tester"`
 	Name        string `json:"name" example:"Name of a thread"`
 	Description string `json:"description" example:"Description of the thread"`
