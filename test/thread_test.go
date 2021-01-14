@@ -84,3 +84,55 @@ func TestAddThread(t *testing.T) {
 		fmt.Println()
 	}
 }
+
+// TestUpdateThread is to test updating a thread by a threadID
+// it tests the endpoint PUT /thread/{threadID}
+func TestUpdateThread(t *testing.T) {
+	// Create a slice of testcase struct
+	testCase := make([]interfaces.TestStruct, 0)
+	// A correct test case
+	testCase = append(testCase, interfaces.TestStruct{
+		ThreadID:           "11",
+		Input:              `{"name":"threadName", "description":"descriptionThread"}`,
+		ExpectedStatusCode: 200,
+	})
+	// A false test case [id not found]
+	testCase = append(testCase, interfaces.TestStruct{
+		ThreadID:           "0",
+		Input:              `{"name":"threadName", "description":"descriptionThread"}`,
+		ExpectedStatusCode: 400,
+	})
+	// A false test case [id not an integer]
+	testCase = append(testCase, interfaces.TestStruct{
+		ThreadID:           "notAnInteger",
+		Input:              `{"name":"threadName", "description":"descriptionThread"}`,
+		ExpectedStatusCode: 400,
+	})
+	// A false test case [cannot change other person thread]
+	testCase = append(testCase, interfaces.TestStruct{
+		ThreadID:           "2",
+		Input:              `{"name":"threadName", "description":"descriptionThread"}`,
+		ExpectedStatusCode: 400,
+	})
+
+	// Check every testcase
+	for _, tc := range testCase {
+		fmt.Println(tc.ThreadID)
+		// Make a request to the /user/{username}
+		req, err := http.NewRequest("GET", fmt.Sprintf("/thread/%v", tc.ThreadID), bytes.NewBufferString(tc.Input))
+		if err != nil {
+			t.Errorf("Error trying to get new request get to /thread/%v: %v", tc.ThreadID, err)
+		}
+		// Sets the path threadID
+		req = mux.SetURLVars(req, map[string]string{"threadID": tc.ThreadID})
+		// Sets the token for the header
+		req.Header.Set("Token", Token)
+		// Create http test
+		r := httptest.NewRecorder()
+		h := http.HandlerFunc(thread.UpdateThreadHandler)
+		h.ServeHTTP(r, req)
+		// Assert the result with the expected result
+		assert.Equal(t, r.Code, tc.ExpectedStatusCode)
+		fmt.Println()
+	}
+}
