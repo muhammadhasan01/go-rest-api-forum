@@ -10,10 +10,10 @@ import (
 func Migrate() {
 	Auth := &interfaces.Auth{}
 	User := &interfaces.User{}
-	Form := &interfaces.Form{}
+	Thread := &interfaces.Thread{}
 	Post := &interfaces.Post{}
 	db := utils.ConnectDB()
 	defer db.Close()
 
-	db.AutoMigrate(&Auth, &User, &Form, &Post)
+	db.AutoMigrate(&Auth, &User, &Thread, &Post)
 }

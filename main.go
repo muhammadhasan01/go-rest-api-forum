@@ -10,11 +10,13 @@
 package main
 
 import (
+	"backend-forum/migrations"
 	"backend-forum/router"
 	"backend-forum/utils"
 )
 
 func main() {
+	migrations.Migrate()
 	utils.PrepareLog()
 	router.StartAPI()
 }
