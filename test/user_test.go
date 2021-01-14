@@ -14,7 +14,7 @@ import (
 )
 
 // TestGetUser is to test getting a user by a username
-// it tests the endpoint /user/{username}
+// it tests the endpoint GET /user/{username}
 func TestGetUser(t *testing.T) {
 	// Create a slice of testcase struct
 	testCase := make([]interfaces.TestStruct, 0)
@@ -50,7 +50,7 @@ func TestGetUser(t *testing.T) {
 }
 
 // TestUpdateUser is to test updating a user by its username
-// it tests the endpoint /user/{username}
+// it tests the endpoint PUT /user/{username}
 func TestUpdateUser(t *testing.T) {
 	// Create a slice of testcase struct
 	testCase := make([]interfaces.TestStruct, 0)
@@ -90,7 +90,7 @@ func TestUpdateUser(t *testing.T) {
 }
 
 // TestDeleteUser is to test deleting a user by its username
-// it tests the endpoint /user/{username}
+// it tests the endpoint DELETE /user/{username}
 func TestDeleteUser(t *testing.T) {
 	// Create a slice of testcase struct
 	testCase := make([]interfaces.TestStruct, 0)
