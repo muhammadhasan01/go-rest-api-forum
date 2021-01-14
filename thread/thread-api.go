@@ -44,6 +44,8 @@ func GetThreadHandler(w http.ResponseWriter, r *http.Request) {
 // @Title Adds as a thread.
 // @Description Adds a thread from a thread ID.
 // @Param  thread  body  ThreadBody  true  "Info of the thread (name, description)"
+// @Param  threadID  path  int  true  "threadID of the thread in the path"
+// @Param  token  header  string  true  "JWT Token received when logged in"
 // @Success  200  object  AddThreadResponse  "AddThreadResponse JSON"
 // @Failure  400  object  ErrorResponse  "ErrorResponse JSON"
 // @Resource thread
@@ -78,7 +80,9 @@ func AddThreadHandler(w http.ResponseWriter, r *http.Request) {
 
 // @Title Updates as a thread.
 // @Description Updates a thread from a thread ID.
+// @Param  threadID  path  int  true  "threadID of the thread in the path"
 // @Param  thread  body  ThreadBody  true  "Info of the thread (name, description)"
+// @Param  token  header  string  true  "JWT Token received when logged in"
 // @Success  200  object  UpdateThreadResponse  "UpdateThreadResponse JSON"
 // @Failure  400  object  ErrorResponse  "ErrorResponse JSON"
 // @Resource thread
@@ -120,6 +124,7 @@ func UpdateThreadHandler(w http.ResponseWriter, r *http.Request) {
 // @Title Delets as a thread.
 // @Description Deletes a thread from a thread ID.
 // @Param  threadID  path  int  true  "Thread ID from the path"
+// @Param  token  header  string  true  "JWT Token received when logged in"
 // @Success  200  object  DeleteThreadResponse  "DeleteThreadResponse JSON"
 // @Failure  400  object  ErrorResponse  "ErrorResponse JSON"
 // @Resource thread

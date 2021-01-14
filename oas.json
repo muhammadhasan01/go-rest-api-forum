@@ -1,0 +1,1154 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Backend API Discussion Forum",
+    "description": "The Backend API which handles RESTful API that provides the backend for a discussion forum with Users, Threads and Posts",
+    "contact": {
+      "name": "Muhammad Hasan",
+      "email": "muhammad.hasan@pinhome.id"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://en.wikipedia.org/wiki/MIT_License"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "/",
+      "description": "Default Server URL"
+    }
+  ],
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "responses": {
+          "202": {
+            "description": "LoginResponse JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/backend-forum.auth.LoginResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ErrorResponse JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/backend-forum.auth.ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ],
+        "summary": "Login as a user.",
+        "description": " Handling a user to login, and creates a JWT Token for the user.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/backend-forum.auth.LoginBody"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/auth/logout": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "LogoutResponse JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/backend-forum.auth.LogoutResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ErrorResponse JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/backend-forum.auth.ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ],
+        "summary": "Logout a user.",
+        "description": " Handling a user to logout.",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "header",
+            "description": "JWT Token received when logged in",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "string",
+              "description": "JWT Token received when logged in"
+            }
+          }
+        ]
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "responses": {
+          "200": {
+            "description": "RegisterResponse JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/backend-forum.auth.RegisterResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ErrorResponse JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/backend-forum.auth.ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ],
+        "summary": "Register a user.",
+        "description": " Handling a user to register.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/backend-forum.auth.RegisterBody"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/thread/{threadID}": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "ThreadResponse JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/backend-forum.thread.ThreadResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ErrorResponse JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/backend-forum.thread.ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "thread"
+        ],
+        "summary": "Gets as a thread.",
+        "description": " Gets a thread from a thread ID.",
+        "parameters": [
+          {
+            "name": "threadID",
+            "in": "path",
+            "description": "threadID of the thread in the path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "threadID of the thread in the path"
+            }
+          }
+        ]
+      },
+      "post": {
+        "responses": {
+          "200": {
+            "description": "AddThreadResponse JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/backend-forum.thread.AddThreadResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ErrorResponse JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/backend-forum.thread.ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "thread"
+        ],
+        "summary": "Adds as a thread.",
+        "description": " Adds a thread from a thread ID.",
+        "parameters": [
+          {
+            "name": "threadID",
+            "in": "path",
+            "description": "threadID of the thread in the path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "threadID of the thread in the path"
+            }
+          },
+          {
+            "name": "token",
+            "in": "header",
+            "description": "JWT Token received when logged in",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "string",
+              "description": "JWT Token received when logged in"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/backend-forum.thread.ThreadBody"
+              }
+            }
+          },
+          "required": true
+        }
+      },
+      "put": {
+        "responses": {
+          "200": {
+            "description": "UpdateThreadResponse JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/backend-forum.thread.UpdateThreadResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ErrorResponse JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/backend-forum.thread.ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "thread"
+        ],
+        "summary": "Updates as a thread.",
+        "description": " Updates a thread from a thread ID.",
+        "parameters": [
+          {
+            "name": "threadID",
+            "in": "path",
+            "description": "threadID of the thread in the path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "threadID of the thread in the path"
+            }
+          },
+          {
+            "name": "token",
+            "in": "header",
+            "description": "JWT Token received when logged in",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "string",
+              "description": "JWT Token received when logged in"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/backend-forum.thread.ThreadBody"
+              }
+            }
+          },
+          "required": true
+        }
+      },
+      "delete": {
+        "responses": {
+          "200": {
+            "description": "DeleteThreadResponse JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/backend-forum.thread.DeleteThreadResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ErrorResponse JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/backend-forum.thread.ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "thread"
+        ],
+        "summary": "Delets as a thread.",
+        "description": " Deletes a thread from a thread ID.",
+        "parameters": [
+          {
+            "name": "threadID",
+            "in": "path",
+            "description": "Thread ID from the path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "Thread ID from the path"
+            }
+          },
+          {
+            "name": "token",
+            "in": "header",
+            "description": "JWT Token received when logged in",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "string",
+              "description": "JWT Token received when logged in"
+            }
+          }
+        ]
+      }
+    },
+    "/thread/{threadID}/post/add": {
+      "post": {
+        "responses": {
+          "200": {
+            "description": "AddPostResponse JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/backend-forum.post.AddPostResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ErrorResponse JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/backend-forum.post.ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "post"
+        ],
+        "summary": "Adds a post.",
+        "description": " Adds a post from a post ID.",
+        "parameters": [
+          {
+            "name": "threadID",
+            "in": "path",
+            "description": "Thread ID from the path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "Thread ID from the path"
+            }
+          },
+          {
+            "name": "token",
+            "in": "header",
+            "description": "JWT Token received when logged in",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "string",
+              "description": "JWT Token received when logged in"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/backend-forum.post.PostBody"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/thread/{threadID}/post/{postID}": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "ThreadResponse JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/backend-forum.post.PostResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ErrorResponse JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/backend-forum.post.ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "post"
+        ],
+        "summary": "Gets a post.",
+        "description": " Gets a post from a post ID.",
+        "parameters": [
+          {
+            "name": "threadID",
+            "in": "path",
+            "description": "Thread ID from the path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "Thread ID from the path"
+            }
+          },
+          {
+            "name": "postID",
+            "in": "path",
+            "description": "postID of the post in the path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "postID of the post in the path"
+            }
+          }
+        ]
+      },
+      "put": {
+        "responses": {
+          "200": {
+            "description": "UpdatePostResponse JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/backend-forum.post.UpdatePostResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ErrorResponse JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/backend-forum.post.ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "post"
+        ],
+        "summary": "Updates a post.",
+        "description": " Updates a post from a post ID.",
+        "parameters": [
+          {
+            "name": "threadID",
+            "in": "path",
+            "description": "Thread ID from the path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "Thread ID from the path"
+            }
+          },
+          {
+            "name": "postID",
+            "in": "path",
+            "description": "Post ID from the path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "Post ID from the path"
+            }
+          },
+          {
+            "name": "token",
+            "in": "header",
+            "description": "JWT Token received when logged in",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "string",
+              "description": "JWT Token received when logged in"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/backend-forum.post.PostBody"
+              }
+            }
+          },
+          "required": true
+        }
+      },
+      "delete": {
+        "responses": {
+          "200": {
+            "description": "DeletePostResponse JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/backend-forum.post.DeletePostResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ErrorResponse JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/backend-forum.post.ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "post"
+        ],
+        "summary": "Deletes a post.",
+        "description": " Deletes a post from a post ID.",
+        "parameters": [
+          {
+            "name": "threadID",
+            "in": "path",
+            "description": "Thread ID from the path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "Thread ID from the path"
+            }
+          },
+          {
+            "name": "postID",
+            "in": "path",
+            "description": "Post ID from the path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "Post ID from the path"
+            }
+          },
+          {
+            "name": "token",
+            "in": "header",
+            "description": "JWT Token received when logged in",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "string",
+              "description": "JWT Token received when logged in"
+            }
+          }
+        ]
+      }
+    },
+    "/user/{username}": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "UserResponse JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/backend-forum.user.UserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ErrorResponse JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/backend-forum.user.ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "user"
+        ],
+        "summary": "Gets as a user.",
+        "description": " Gets user info from a specific username.",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "description": "username of the user in the path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "string",
+              "description": "username of the user in the path"
+            }
+          }
+        ]
+      },
+      "put": {
+        "responses": {
+          "200": {
+            "description": "UpdateResponse JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/backend-forum.user.UpdateResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ErrorResponse JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/backend-forum.user.ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "user"
+        ],
+        "summary": "Updates a user password.",
+        "description": " Updates a user password, must be used with the user itself or a superuser.",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "description": "username of the user in the path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "string",
+              "description": "username of the user in the path"
+            }
+          },
+          {
+            "name": "token",
+            "in": "header",
+            "description": "JWT Token received when logged in",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "string",
+              "description": "JWT Token received when logged in"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/backend-forum.user.UpdateBody"
+              }
+            }
+          },
+          "required": true
+        }
+      },
+      "delete": {
+        "responses": {
+          "200": {
+            "description": "DeleteResponse JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/backend-forum.user.DeleteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ErrorResponse JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/backend-forum.user.ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "user"
+        ],
+        "summary": "Deletes a user.",
+        "description": " Delete a user from the username path.",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "description": "username of the user in the path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "string",
+              "description": "username of the user in the path"
+            }
+          },
+          {
+            "name": "token",
+            "in": "header",
+            "description": "JWT Token received when logged in",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "string",
+              "description": "JWT Token received when logged in"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "backend-forum.auth.ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "something wrong happened"
+          }
+        }
+      },
+      "backend-forum.auth.LoginBody": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "tester"
+          },
+          "password": {
+            "type": "string",
+            "example": "some_password"
+          }
+        }
+      },
+      "backend-forum.auth.LoginResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "you have been logged in successfully!"
+          },
+          "token": {
+            "type": "string",
+            "example": "someJwtToken"
+          }
+        }
+      },
+      "backend-forum.auth.LogoutResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "you have been logged out successfully"
+          },
+          "username": {
+            "type": "string",
+            "example": "tester"
+          }
+        }
+      },
+      "backend-forum.auth.RegisterBody": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "tester"
+          },
+          "email": {
+            "type": "string",
+            "example": "tester@gmail.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "some_password"
+          }
+        }
+      },
+      "backend-forum.auth.RegisterResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "user registered successfully!"
+          },
+          "username": {
+            "type": "string",
+            "example": "tester"
+          },
+          "email": {
+            "type": "string",
+            "example": "tester@gmail.com"
+          }
+        }
+      },
+      "backend-forum.post.AddPostResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "post has been added successfully!"
+          },
+          "id": {
+            "type": "integer",
+            "example": 45
+          },
+          "title": {
+            "type": "string",
+            "example": "Title of a post"
+          },
+          "username": {
+            "type": "string",
+            "example": "tester"
+          }
+        }
+      },
+      "backend-forum.post.DeletePostResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "post has been deleted successfully!"
+          },
+          "id": {
+            "type": "integer",
+            "example": 45
+          },
+          "username": {
+            "type": "string",
+            "example": "tester"
+          }
+        }
+      },
+      "backend-forum.post.ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "something wrong happened"
+          }
+        }
+      },
+      "backend-forum.post.PostBody": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Title of a post"
+          },
+          "description": {
+            "type": "string",
+            "example": "Description of the post"
+          }
+        }
+      },
+      "backend-forum.post.PostResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 45
+          },
+          "username": {
+            "type": "string",
+            "example": "tester"
+          },
+          "title": {
+            "type": "string",
+            "example": "Title of a post"
+          },
+          "description": {
+            "type": "string",
+            "example": "Description of the post"
+          }
+        }
+      },
+      "backend-forum.post.UpdatePostResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "post has been updated successfully!"
+          },
+          "username": {
+            "type": "string",
+            "example": "tester"
+          },
+          "title": {
+            "type": "string",
+            "example": "new post name"
+          },
+          "description": {
+            "type": "string",
+            "example": "new description post"
+          }
+        }
+      },
+      "backend-forum.thread.AddThreadResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "thread has been added successfully!"
+          },
+          "id": {
+            "type": "integer",
+            "example": 45
+          },
+          "name": {
+            "type": "string",
+            "example": "Name of a thread"
+          },
+          "username": {
+            "type": "string",
+            "example": "tester"
+          }
+        }
+      },
+      "backend-forum.thread.DeleteThreadResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "thread has been deleted successfully!"
+          },
+          "id": {
+            "type": "integer",
+            "example": 45
+          },
+          "username": {
+            "type": "string",
+            "example": "tester"
+          }
+        }
+      },
+      "backend-forum.thread.ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "something wrong happened"
+          }
+        }
+      },
+      "backend-forum.thread.ThreadBody": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Name of a thread"
+          },
+          "description": {
+            "type": "string",
+            "example": "Description of the thread"
+          }
+        }
+      },
+      "backend-forum.thread.ThreadResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 45
+          },
+          "username": {
+            "type": "string",
+            "example": "tester"
+          },
+          "name": {
+            "type": "string",
+            "example": "Name of a thread"
+          },
+          "description": {
+            "type": "string",
+            "example": "Description of the thread"
+          }
+        }
+      },
+      "backend-forum.thread.UpdateThreadResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "thread has been updated successfully!"
+          },
+          "username": {
+            "type": "string",
+            "example": "tester"
+          },
+          "name": {
+            "type": "string",
+            "example": "new thread name"
+          },
+          "description": {
+            "type": "string",
+            "example": "new description thread"
+          }
+        }
+      },
+      "backend-forum.user.DeleteResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "user has been deleted successfully!"
+          },
+          "username": {
+            "type": "string",
+            "example": "tester"
+          }
+        }
+      },
+      "backend-forum.user.ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "something wrong happened"
+          }
+        }
+      },
+      "backend-forum.user.UpdateBody": {
+        "type": "object",
+        "properties": {
+          "password": {
+            "type": "string",
+            "example": "some_new_password"
+          }
+        }
+      },
+      "backend-forum.user.UpdateResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "user has been updated with the new password"
+          },
+          "username": {
+            "type": "string",
+            "example": "tester"
+          }
+        }
+      },
+      "backend-forum.user.UserResponse": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "integer",
+            "example": 205
+          },
+          "username": {
+            "type": "string",
+            "example": "tester"
+          },
+          "email": {
+            "type": "string",
+            "example": "tester@gmail.com"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "AuthorizationHeader": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Inuput your token"
+      }
+    }
+  },
+  "security": [
+    {
+      "AuthorizationHeader": []
+    }
+  ]
+}

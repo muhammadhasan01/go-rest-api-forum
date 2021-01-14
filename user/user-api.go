@@ -38,6 +38,8 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 // @Title Updates a user password.
 // @Description Updates a user password, must be used with the user itself or a superuser.
 // @Param  password  body  UpdateBody  true  "The new password in the body"
+// @Param  username  path  string  true  "username of the user in the path"
+// @Param  token  header  string  true  "JWT Token received when logged in"
 // @Success  200  object  UpdateResponse  "UpdateResponse JSON"
 // @Failure  400  object  ErrorResponse  "ErrorResponse JSON"
 // @Resource user
@@ -76,6 +78,7 @@ func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 // @Title Deletes a user.
 // @Description Delete a user from the username path.
 // @Param  username  path  string  true  "username of the user in the path"
+// @Param  token  header  string  true  "JWT Token received when logged in"
 // @Success  200  object  DeleteResponse  "DeleteResponse JSON"
 // @Failure  400  object  ErrorResponse  "ErrorResponse JSON"
 // @Resource user

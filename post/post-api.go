@@ -49,6 +49,7 @@ func GetPostHandler(w http.ResponseWriter, r *http.Request) {
 // @Description Adds a post from a post ID.
 // @Param  post  body  PostBody  true  "Info of the post (title, description)"
 // @Param  threadID  path  int  true  "Thread ID from the path"
+// @Param  token  header  string  true  "JWT Token received when logged in"
 // @Success  200  object  AddPostResponse  "AddPostResponse JSON"
 // @Failure  400  object  ErrorResponse  "ErrorResponse JSON"
 // @Resource post
@@ -90,9 +91,10 @@ func AddPostHandler(w http.ResponseWriter, r *http.Request) {
 
 // @Title Updates a post.
 // @Description Updates a post from a post ID.
-// @Param  post  body  ThreadBody  true  "Info of the post (title, description)"
+// @Param  post  body  PostBody  true  "Info of the post (title, description)"
 // @Param  threadID  path  int  true  "Thread ID from the path"
 // @Param  postID  path  int  true  "Post ID from the path"
+// @Param  token  header  string  true  "JWT Token received when logged in"
 // @Success  200  object  UpdatePostResponse  "UpdatePostResponse JSON"
 // @Failure  400  object  ErrorResponse  "ErrorResponse JSON"
 // @Resource post
@@ -143,9 +145,10 @@ func UpdatePostHandler(w http.ResponseWriter, r *http.Request) {
 // @Description Deletes a post from a post ID.
 // @Param  threadID  path  int  true  "Thread ID from the path"
 // @Param  postID  path  int  true  "Post ID from the path"
+// @Param  token  header  string  true  "JWT Token received when logged in"
 // @Success  200  object  DeletePostResponse  "DeletePostResponse JSON"
 // @Failure  400  object  ErrorResponse  "ErrorResponse JSON"
-// @Resource thread
+// @Resource post
 // @Route /thread/{threadID}/post/{postID} [delete]
 func DeletePostHandler(w http.ResponseWriter, r *http.Request) {
 	// Gets claim
