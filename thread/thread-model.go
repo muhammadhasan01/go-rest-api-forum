@@ -4,28 +4,51 @@ import (
 	"backend-forum/interfaces"
 	"backend-forum/utils"
 
+	"errors"
+
 	log "github.com/sirupsen/logrus"
 )
 
-func AddThread(thread *interfaces.Thread) map[string]interface{} {
+// AddThread is a function to add a thread to the database
+func AddThread(userID uint, username string, name string, description string) AddThreadResponse {
 	db := utils.ConnectDB()
 	defer db.Close()
 
+	// Defines the thread
+	thread := interfaces.Thread{
+		UserID:      userID,
+		Username:    username,
+		Name:        name,
+		Description: description,
+	}
+
+	// Create the thread to the database
 	db.Create(&thread)
 
-	response := map[string]interface{}{"message": "thread added succesfully", "thread": thread}
-	log.Info("A new thread with the name: ", thread.Name, " has been added succesfully")
+	// Log the info
+	log.WithFields(log.Fields{
+		"threadID": thread.ID,
+		"username": username,
+	}).Info("A user has just created a new thread")
+
+	// Create the response and return it
+	response := AddThreadResponse{
+		ID:       thread.ID,
+		Message:  "thread has been added successfully!",
+		Username: username,
+		Name:     name,
+	}
 
 	return response
 }
 
 // GetThread is a function to get a thread from a thread id
-func GetThread(thread_id uint) (ThreadResponse, error) {
+func GetThread(threadID uint) (ThreadResponse, error) {
 	db := utils.ConnectDB()
 	defer db.Close()
 
 	var thread interfaces.Thread
-	if err := db.First(&thread, thread_id).Error; err != nil {
+	if err := db.First(&thread, threadID).Error; err != nil {
 		return ThreadResponse{}, err
 	}
 
@@ -39,45 +62,76 @@ func GetThread(thread_id uint) (ThreadResponse, error) {
 	return response, nil
 }
 
-func UpdateThread(thread_id uint, description string, user_id uint) map[string]interface{} {
+// UpdateThread is a function to update a thread
+func UpdateThread(threadID uint, name string, description string, username string) (UpdateThreadResponse, error) {
 	db := utils.ConnectDB()
 	defer db.Close()
 
+	// Check whether the thread exists
 	var thread interfaces.Thread
-	if err := db.First(&thread, thread_id).Error; err != nil {
-		return map[string]interface{}{"ErrorMsg": "Thread ID not found"}
+	if err := db.First(&thread, threadID).Error; err != nil {
+		return UpdateThreadResponse{}, errors.New("thread ID not found")
 	}
 
-	if thread.UserID != user_id {
-		return map[string]interface{}{"ErrorMsg": "You cannot change description of other person thread"}
+	// Check whether user can change the thread or not
+	if thread.Username != username {
+		return UpdateThreadResponse{}, errors.New("You cannot change description of other person thread")
 	}
 
+	// Update the thread and save it
+	thread.Name = name
 	thread.Description = description
 	db.Save(&thread)
 
-	log.Info("Thread with the id ", thread.ID, " has been updated")
-	return map[string]interface{}{"message": "thread has been updated succesfully", "newThread": thread}
+	// Log the info
+	log.WithFields(log.Fields{
+		"threadID": thread.ID,
+		"username": username,
+	}).Info("A user has just updated a thread")
+
+	// Create the response and return it
+	response := UpdateThreadResponse{
+		Message:     "thread has been updated successfully!",
+		Username:    username,
+		Name:        name,
+		Description: description,
+	}
+
+	return response, nil
 }
 
-func DeleteThread(thread_id uint, user_id uint) map[string]interface{} {
+func DeleteThread(threadID uint, username string) (DeleteThreadResponse, error) {
 	db := utils.ConnectDB()
 	defer db.Close()
 
+	// Check whether the thread exists
 	var thread interfaces.Thread
-	if err := db.First(&thread, thread_id).Error; err != nil {
-		return map[string]interface{}{"ErrorMsg": "Thread ID not found"}
+	if err := db.First(&thread, threadID).Error; err != nil {
+		return DeleteThreadResponse{}, errors.New("thread ID not found")
 	}
 
-	if thread.UserID != user_id {
-		return map[string]interface{}{"ErrorMsg": "You cannot delete other person thread"}
+	if thread.Username != username {
+		return DeleteThreadResponse{}, errors.New("You cannot change other person thread")
 	}
 
+	// Deletes the thread also the post inside the thread
 	var post interfaces.Post
-	db.Where("thread_id = ?", thread_id).Find(&post)
-
+	db.Where("thread_id = ?", threadID).Find(&post)
 	db.Unscoped().Delete(&post)
 	db.Unscoped().Delete(&thread)
 
-	log.Info("Thread with the id ", thread.ID, " has been deleted")
-	return map[string]interface{}{"message": "thread has been deleted succesfully"}
+	// Log the info
+	log.WithFields(log.Fields{
+		"threadID": thread.ID,
+		"username": username,
+	}).Info("A user has just deleted a thread")
+
+	// Create the response and return it
+	response := DeleteThreadResponse{
+		Message:  "thread has been deleted successfully!",
+		ID:       thread.ID,
+		Username: username,
+	}
+
+	return response, nil
 }

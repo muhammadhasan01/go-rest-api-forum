@@ -2,7 +2,6 @@ package thread
 
 import (
 	"backend-forum/auth"
-	"backend-forum/interfaces"
 	"backend-forum/utils"
 	"encoding/json"
 	"io/ioutil"
@@ -42,60 +41,107 @@ func GetThreadHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+// @Title Adds as a thread.
+// @Description Adds a thread from a thread ID.
+// @Param  thread  body  ThreadBody  true  "Info of the thread (name, description)"
+// @Success  200  object  AddThreadResponse  "AddThreadResponse JSON"
+// @Failure  400  object  ErrorResponse  "ErrorResponse JSON"
+// @Resource thread
+// @Route /thread/{threadID} [post]
 func AddThreadHandler(w http.ResponseWriter, r *http.Request) {
+	// Gets the data from the body
 	body, err := ioutil.ReadAll(r.Body)
-	utils.HandleErr(err)
+	if err != nil {
+		handleError(w, err)
+		return
+	}
+
+	// Gets the claim
 	claims, _ := auth.GetClaims(r)
 
-	var formattedBody interfaces.Thread
+	// Format the data from the body
+	var formattedBody ThreadBody
 	err = json.Unmarshal(body, &formattedBody)
-	utils.HandleErr(err)
+	if err != nil {
+		handleError(w, err)
+		return
+	}
 
-	formattedBody.UserID = claims["user_id"].(uint)
-	formattedBody.Username = claims["username"].(string)
+	// Initilaize the claim into variables
+	userID := claims["user_id"].(uint)
+	username := claims["username"].(string)
 
-	response := AddThread(&formattedBody)
-
+	// Get response and give out the response
+	response := AddThread(userID, username, formattedBody.Name, formattedBody.Description)
 	json.NewEncoder(w).Encode(response)
 }
 
+// @Title Updates as a thread.
+// @Description Updates a thread from a thread ID.
+// @Param  thread  body  ThreadBody  true  "Info of the thread (name, description)"
+// @Success  200  object  UpdateThreadResponse  "UpdateThreadResponse JSON"
+// @Failure  400  object  ErrorResponse  "ErrorResponse JSON"
+// @Resource thread
+// @Route /thread/{threadID} [put]
 func UpdateThreadHandler(w http.ResponseWriter, r *http.Request) {
+	// Get the data from the body
 	body, err := ioutil.ReadAll(r.Body)
 	utils.HandleErr(err)
+
+	// Get the claims
 	claims, _ := auth.GetClaims(r)
 
-	var formattedBody interfaces.Thread
+	// Format the data from the body
+	var formattedBody ThreadBody
 	err = json.Unmarshal(body, &formattedBody)
-	utils.HandleErr(err)
-
-	vars := mux.Vars(r)
-	key, err := strconv.ParseUint(vars["threadID"], 10, 64)
-
 	if err != nil {
-		utils.HandleErr(err)
-		msg := interfaces.ErrorMessage{ErrorMsg: "ID cannot be converted into an integer"}
-		json.NewEncoder(w).Encode(msg)
+		handleError(w, err)
 		return
 	}
 
-	response := UpdateThread(uint(key), formattedBody.Description, claims["user_id"].(uint))
+	// Get the threadID from the path
+	vars := mux.Vars(r)
+	key, err := strconv.ParseUint(vars["threadID"], 10, 64)
+	if err != nil {
+		handleError(w, err)
+		return
+	}
+
+	// Gets the response
+	response, err := UpdateThread(uint(key), formattedBody.Name, formattedBody.Description, claims["username"].(string))
+	if err != nil {
+		handleError(w, err)
+		return
+	}
 
 	json.NewEncoder(w).Encode(response)
 }
 
+// @Title Delets as a thread.
+// @Description Deletes a thread from a thread ID.
+// @Param  threadID  path  int  true  "Thread ID from the path"
+// @Success  200  object  DeleteThreadResponse  "DeleteThreadResponse JSON"
+// @Failure  400  object  ErrorResponse  "ErrorResponse JSON"
+// @Resource thread
+// @Route /thread/{threadID} [delete]
 func DeleteThreadHandler(w http.ResponseWriter, r *http.Request) {
+	// Get Claims
 	claims, _ := auth.GetClaims(r)
 	vars := mux.Vars(r)
-	key, err := strconv.ParseUint(vars["threadID"], 10, 64)
 
+	// Get threadID
+	key, err := strconv.ParseUint(vars["threadID"], 10, 64)
 	if err != nil {
-		utils.HandleErr(err)
-		msg := interfaces.ErrorMessage{ErrorMsg: "ID cannot be converted into an integer"}
-		json.NewEncoder(w).Encode(msg)
+		handleError(w, err)
 		return
 	}
 
-	response := DeleteThread(uint(key), claims["user_id"].(uint))
+	// Gets the response
+	response, err := DeleteThread(uint(key), claims["username"].(string))
+	if err != nil {
+		handleError(w, err)
+		return
+	}
 
 	json.NewEncoder(w).Encode(response)
 }

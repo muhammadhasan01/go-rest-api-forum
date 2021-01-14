@@ -1,9 +1,10 @@
 package thread
 
-// UpdateBody is the type that needs
-// to be in a body request when user wants to update the password
-type UpdateBody struct {
-	Password string `json:"password" example:"some_new_password"`
+// ThreadBody is the type that needs
+// to be in a body request when user wants to add a thread
+type ThreadBody struct {
+	Name        string `json:"name" example:"Name of a thread"`
+	Description string `json:"description" example:"Description of the thread"`
 }
 
 // ThreadResponse is the type that will
@@ -15,24 +16,29 @@ type ThreadResponse struct {
 	Description string `json:"description" example:"Description of the thread"`
 }
 
-// LogoutResponse is the type that will
-// be responded to a logout request
-type LogoutResponse struct {
-	Message  string `json:"message" example:"you have been logged out successfully"`
+// AddThreadResponse is the type that will
+// be responded to a add thread request
+type AddThreadResponse struct {
+	Message  string `json:"message" example:"thread has been added successfully!"`
+	ID       uint   `json:"id" example:"45"`
+	Name     string `json:"name" example:"Name of a thread"`
 	Username string `json:"username" example:"tester"`
 }
 
-// UpdateResponse is the type that will
-// be responded to an update request
-type UpdateResponse struct {
-	Message  string `json:"message" example:"user has been updated with the new password"`
-	Username string `json:"username" example:"tester"`
+// UpdateThreadResponse is the type that will
+// be responded to an update thread request
+type UpdateThreadResponse struct {
+	Message     string `json:"message" example:"thread has been updated successfully!"`
+	Username    string `json:"username" example:"tester"`
+	Name        string `json:"name" example:"new thread name"`
+	Description string `json:"description" example:"new description thread"`
 }
 
-// DeleteResponse is the type that will
-// be responded to an delete request
-type DeleteResponse struct {
-	Message  string `json:"message" example:"user has been deleted successfully!"`
+// DeleteThreadResponse is the type that will
+// be responded to an delete delete request
+type DeleteThreadResponse struct {
+	Message  string `json:"message" example:"thread has been deleted successfully!"`
+	ID       uint   `json:"id" example:"45"`
 	Username string `json:"username" example:"tester"`
 }
 
