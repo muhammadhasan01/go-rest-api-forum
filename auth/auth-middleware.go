@@ -19,17 +19,20 @@ func Middleware(next http.HandlerFunc) http.HandlerFunc {
 		if r.Header["Token"] != nil {
 			token, err := ExtractToken(r)
 			if err != nil {
+				w.WriteHeader(http.StatusUnauthorized)
 				utils.HandleErr(err)
 				fmt.Fprintf(w, err.Error())
 				return
 			}
 			if !token.Valid {
+				w.WriteHeader(http.StatusUnauthorized)
 				utils.HandleErr(errors.New("Token not valid"))
 				fmt.Fprintf(w, "Error: Token not valid")
 				return
 			}
 
 			if !CheckTokenInDB(token.Raw) {
+				w.WriteHeader(http.StatusUnauthorized)
 				utils.HandleErr(errors.New("Token not found in whitelist"))
 				fmt.Fprintf(w, "Token not found in whitelist")
 				return
