@@ -36,7 +36,7 @@ func GetPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Gets the response
-	response, err := GetPost(uint(postID), uint(threadID))
+	response, err := GetPost(uint(threadID), uint(postID))
 	if err != nil {
 		handleError(w, err)
 		return
@@ -84,7 +84,11 @@ func AddPostHandler(w http.ResponseWriter, r *http.Request) {
 	userID := claims["user_id"].(uint)
 	username := claims["username"].(string)
 
-	response := AddPost(threadID, userID, username, formattedBody.Title, formattedBody.Description)
+	response, err := AddPost(threadID, userID, username, formattedBody.Title, formattedBody.Description)
+	if err != nil {
+		handleError(w, err)
+		return
+	}
 
 	json.NewEncoder(w).Encode(response)
 }
@@ -118,7 +122,7 @@ func UpdatePostHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Gets the threadID from the path
 	vars := mux.Vars(r)
-	_, err = strconv.ParseUint(vars["threadID"], 10, 64)
+	threadID, err := strconv.ParseUint(vars["threadID"], 10, 64)
 	if err != nil {
 		handleError(w, err)
 		return
@@ -132,7 +136,7 @@ func UpdatePostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Gets the response
-	response, err := UpdatePost(uint(postID), formattedBody.Title, formattedBody.Description, claims["username"].(string))
+	response, err := UpdatePost(uint(threadID), uint(postID), formattedBody.Title, formattedBody.Description, claims["username"].(string))
 	if err != nil {
 		handleError(w, err)
 		return
@@ -156,7 +160,7 @@ func DeletePostHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	// Gets the threadID
-	_, err := strconv.ParseUint(vars["threadID"], 10, 64)
+	threadID, err := strconv.ParseUint(vars["threadID"], 10, 64)
 	if err != nil {
 		handleError(w, err)
 		return
@@ -170,7 +174,7 @@ func DeletePostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Gets the response
-	response, err := DeletePost(uint(postID), claims["username"].(string))
+	response, err := DeletePost(uint(threadID), uint(postID), claims["username"].(string))
 	if err != nil {
 		handleError(w, err)
 		return

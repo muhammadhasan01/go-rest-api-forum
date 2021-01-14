@@ -9,9 +9,15 @@ import (
 )
 
 // AddPost is a functio to add a post
-func AddPost(threadID uint, userID uint, username string, title string, description string) AddPostResponse {
+func AddPost(threadID uint, userID uint, username string, title string, description string) (AddPostResponse, error) {
 	db := utils.ConnectDB()
 	defer db.Close()
+
+	// Check whether the thread exists
+	var thread interfaces.Thread
+	if err := db.First(&thread, threadID).Error; err != nil {
+		return AddPostResponse{}, errors.New("thread ID not found")
+	}
 
 	// Make the post
 	post := interfaces.Post{
@@ -39,11 +45,11 @@ func AddPost(threadID uint, userID uint, username string, title string, descript
 		Title:    title,
 	}
 
-	return response
+	return response, nil
 }
 
 // GetPost is a function to get a post from a post ID
-func GetPost(postID uint, threadID uint) (PostResponse, error) {
+func GetPost(threadID uint, postID uint) (PostResponse, error) {
 	db := utils.ConnectDB()
 	defer db.Close()
 
@@ -64,9 +70,15 @@ func GetPost(postID uint, threadID uint) (PostResponse, error) {
 }
 
 // UpdatePost is a function to update a post
-func UpdatePost(postID uint, title string, description string, username string) (UpdatePostResponse, error) {
+func UpdatePost(threadID uint, postID uint, title string, description string, username string) (UpdatePostResponse, error) {
 	db := utils.ConnectDB()
 	defer db.Close()
+
+	// Check whether the thread exists
+	var thread interfaces.Thread
+	if err := db.First(&thread, threadID).Error; err != nil {
+		return UpdatePostResponse{}, errors.New("thread ID not found")
+	}
 
 	// Check whether the post exists
 	var post interfaces.Post
@@ -102,9 +114,15 @@ func UpdatePost(postID uint, title string, description string, username string) 
 }
 
 // DeletePost is a function to delete a post
-func DeletePost(postID uint, username string) (DeletePostResponse, error) {
+func DeletePost(threadID uint, postID uint, username string) (DeletePostResponse, error) {
 	db := utils.ConnectDB()
 	defer db.Close()
+
+	// Check whether the thread exists
+	var thread interfaces.Thread
+	if err := db.First(&thread, threadID).Error; err != nil {
+		return DeletePostResponse{}, errors.New("thread ID not found")
+	}
 
 	// Check whether the post exists
 	var post interfaces.Post
