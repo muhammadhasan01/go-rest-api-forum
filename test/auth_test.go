@@ -19,7 +19,7 @@ func TestRegister(t *testing.T) {
 	testCase := make([]interfaces.TestStruct, 0)
 	// A correct test case
 	testCase = append(testCase, interfaces.TestStruct{
-		Input:              `{"username":"NewTester", "email":"NewTester@gmail.com", "password":"tester"}`,
+		Input:              `{"username":"tester", "email":"tester@gmail.com", "password":"tester"}`,
 		ExpectedStatusCode: 200,
 	})
 	// A false test case [username has already been taken]
