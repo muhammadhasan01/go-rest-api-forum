@@ -1,10 +1,9 @@
 package user
 
-// LoginBody is the type that needs
-// to be in a body request when user wants to login
-type LoginBody struct {
-	Username string `json:"username" example:"tester"`
-	Password string `json:"password" example:"some_password"`
+// UpdateBody is the type that needs
+// to be in a body request when user wants to update the password
+type UpdateBody struct {
+	Password string `json:"password" example:"some_new_password"`
 }
 
 // RegisterBody is the type that needs
@@ -35,6 +34,13 @@ type RegisterResponse struct {
 // be responded to a logout request
 type LogoutResponse struct {
 	Message  string `json:"message" example:"you have been logged out successfully"`
+	Username string `json:"username" example:"tester"`
+}
+
+// UpdateResponse is the type that will
+// be responded to an update request
+type UpdateResponse struct {
+	Message  string `json:"message" example:"user has been updated with the new password"`
 	Username string `json:"username" example:"tester"`
 }
 
