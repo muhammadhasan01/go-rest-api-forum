@@ -131,7 +131,7 @@ func DeletePost(threadID uint, postID uint, username string) (DeletePostResponse
 	}
 
 	if post.Username != username {
-		return DeletePostResponse{}, errors.New("You cannot change other person post")
+		return DeletePostResponse{}, errors.New("You cannot delete other person post")
 	}
 
 	// Deletes the post
