@@ -68,3 +68,50 @@ func TestGetPost(t *testing.T) {
 		fmt.Println()
 	}
 }
+
+// TestAddPost is to test adding a post by a threadID
+// it tests the endpoint POST /thread/{threadID}/post/add
+func TestAddPost(t *testing.T) {
+	// Create a slice of testcase struct
+	testCase := make([]interfaces.TestStruct, 0)
+	// A correct test case
+	testCase = append(testCase, interfaces.TestStruct{
+		Input:              `{"title":"postTitle", "description":"postDescription"}`,
+		ThreadID:           "7",
+		ExpectedStatusCode: 200,
+	})
+	// A false test case [thread ID not found]
+	testCase = append(testCase, interfaces.TestStruct{
+		Input:              `{"title":"postTitle", "description":"postDescription"}`,
+		ThreadID:           "0",
+		ExpectedStatusCode: 400,
+	})
+	// A false test case [thread ID not an integer]
+	// A false test case [thread ID not found]
+	testCase = append(testCase, interfaces.TestStruct{
+		Input:              `{"title":"postTitle", "description":"postDescription"}`,
+		ThreadID:           "notAnInteger",
+		ExpectedStatusCode: 400,
+	})
+
+	// Check every testcase
+	for _, tc := range testCase {
+		fmt.Println(tc.ThreadID, tc.Input)
+		// Make a request to the /thread/{threadID}/post/add
+		req, err := http.NewRequest("GET", fmt.Sprintf("/thread/%v/post/add", tc.ThreadID), bytes.NewBufferString(tc.Input))
+		if err != nil {
+			t.Errorf("Error trying to get new request get to /thread/%v/post/add: %v", tc.ThreadID, err)
+		}
+		// Sets the path threadID
+		req = mux.SetURLVars(req, map[string]string{"threadID": tc.ThreadID})
+		// Sets the token for the header
+		req.Header.Set("Token", Token)
+		// Create http test
+		r := httptest.NewRecorder()
+		h := http.HandlerFunc(post.AddPostHandler)
+		h.ServeHTTP(r, req)
+		// Assert the result with the expected result
+		assert.Equal(t, r.Code, tc.ExpectedStatusCode)
+		fmt.Println()
+	}
+}
