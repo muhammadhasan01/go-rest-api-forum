@@ -49,4 +49,5 @@ type TestStruct struct {
 	Input              string
 	ExpectedStatusCode int
 	Username           string
+	ThreadID           string
 }
