@@ -11,10 +11,28 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// @Title Gets as a user from a username.
+// @Description Gets user info from a specific username.
+// @Param  username  path  string  true  "username of the user in the path"
+// @Success  200  object  UserResponse  "UserResponse JSON"
+// @Failure  400  object  ErrorResponse  "ErrorResponse JSON"
+// @Resource user
+// @Route /user/{username} [get]
 func GetUserHandler(w http.ResponseWriter, r *http.Request) {
+	// Gets the username from the path
 	vars := mux.Vars(r)
 	key := vars["username"]
-	response := GetUser(key)
+	response, err := GetUser(key)
+
+	// Handle if any bad request error occurs
+	if err != nil {
+		utils.HandleErr(err)
+		errResponse := ErrorResponse{Msg: err.Error()}
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(errResponse)
+		return
+	}
+
 	json.NewEncoder(w).Encode(response)
 }
 

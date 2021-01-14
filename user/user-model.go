@@ -3,26 +3,30 @@ package user
 import (
 	"backend-forum/interfaces"
 	"backend-forum/utils"
+	"errors"
 
 	log "github.com/sirupsen/logrus"
 )
 
-func GetUser(username string) map[string]interface{} {
+// GetUser is a function to get a user from a username
+func GetUser(username string) (UserResponse, error) {
 	db := utils.ConnectDB()
 	defer db.Close()
 
+	// Check whether the username exist in the database
 	var user interfaces.User
 	if err := db.Where("username = ?", username).First(&user).Error; err != nil {
-		return map[string]interface{}{"ErrorMsg": "username not found"}
+		return UserResponse{}, errors.New("username not found")
 	}
 
-	response := map[string]interface{}{
-		"userID":   user.ID,
-		"username": user.Username,
-		"email":    user.Email,
+	// Return the response
+	response := UserResponse{
+		UserID:   user.ID,
+		Username: user.Username,
+		Email:    user.Email,
 	}
 
-	return response
+	return response, nil
 }
 
 func UpdateUser(username string, password string, username_claim string) map[string]interface{} {
