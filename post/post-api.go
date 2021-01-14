@@ -12,31 +12,33 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// @Title Gets as a post.
+// @Description Gets a post from a post ID.
+// @Param  postID  path  int  true  "postID of the post in the path"
+// @Success  200  object  PostResponse  "ThreadResponse JSON"
+// @Failure  400  object  ErrorResponse  "ErrorResponse JSON"
+// @Resource post
+// @Route /thread/{threadID}/post/{postID} [get]
 func GetPostHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-
+	// Gets the threadID
 	_, err := strconv.ParseUint(vars["threadID"], 10, 64)
 	if err != nil {
-		utils.HandleErr(err)
-		msg := interfaces.ErrorMessage{ErrorMsg: "Thread ID cannot be converted into an integer"}
-		json.NewEncoder(w).Encode(msg)
+		handleError(w, err)
 		return
 	}
 
+	// Gets the postID
 	postID, err := strconv.ParseUint(vars["postID"], 10, 64)
 	if err != nil {
-		utils.HandleErr(err)
-		msg := interfaces.ErrorMessage{ErrorMsg: "Post ID cannot be converted into an integer"}
-		json.NewEncoder(w).Encode(msg)
+		handleError(w, err)
 		return
 	}
 
+	// Gets the response
 	response, err := GetPost(uint(postID))
-
 	if err != nil {
-		utils.HandleErr(err)
-		msg := interfaces.ErrorMessage{ErrorMsg: "Post ID not found"}
-		json.NewEncoder(w).Encode(msg)
+		handleError(w, err)
 		return
 	}
 
@@ -129,4 +131,11 @@ func DeletePostHandler(w http.ResponseWriter, r *http.Request) {
 	response := DeletePost(uint(postID), claims["user_id"].(uint))
 
 	json.NewEncoder(w).Encode(response)
+}
+
+func handleError(w http.ResponseWriter, err error) {
+	w.WriteHeader(http.StatusBadRequest)
+	utils.HandleErr(err)
+	msg := ErrorResponse{Msg: err.Error()}
+	json.NewEncoder(w).Encode(msg)
 }

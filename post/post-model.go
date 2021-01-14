@@ -19,24 +19,33 @@ func AddPost(Post *interfaces.Post) map[string]interface{} {
 	return response
 }
 
-func GetPost(Post_id uint) (interfaces.Post, error) {
+// GetPost is a function to get a post from a post ID
+func GetPost(postID uint) (PostResponse, error) {
 	db := utils.ConnectDB()
 	defer db.Close()
 
-	var Post interfaces.Post
-	if err := db.First(&Post, Post_id).Error; err != nil {
-		return Post, err
+	// Check whether the post exists
+	var post interfaces.Post
+	if err := db.First(&post, postID).Error; err != nil {
+		return PostResponse{}, err
 	}
 
-	return Post, nil
+	response := PostResponse{
+		ID:          post.ID,
+		Username:    post.Username,
+		Title:       post.Title,
+		Description: post.Description,
+	}
+
+	return response, nil
 }
 
-func UpdatePost(post_id uint, description string, user_id uint) map[string]interface{} {
+func UpdatePost(postID uint, description string, user_id uint) map[string]interface{} {
 	db := utils.ConnectDB()
 	defer db.Close()
 
 	var Post interfaces.Post
-	if err := db.First(&Post, post_id).Error; err != nil {
+	if err := db.First(&Post, postID).Error; err != nil {
 		return map[string]interface{}{"ErrorMsg": "Post ID not found"}
 	}
 
@@ -51,12 +60,12 @@ func UpdatePost(post_id uint, description string, user_id uint) map[string]inter
 	return map[string]interface{}{"message": "Post has been updated succesfully", "newPost": Post}
 }
 
-func DeletePost(Post_id uint, user_id uint) map[string]interface{} {
+func DeletePost(postID uint, user_id uint) map[string]interface{} {
 	db := utils.ConnectDB()
 	defer db.Close()
 
 	var Post interfaces.Post
-	if err := db.First(&Post, Post_id).Error; err != nil {
+	if err := db.First(&Post, postID).Error; err != nil {
 		return map[string]interface{}{"ErrorMsg": "Post ID not found"}
 	}
 
