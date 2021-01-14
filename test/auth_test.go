@@ -2,6 +2,7 @@ package test
 
 import (
 	"backend-forum/auth"
+	"backend-forum/interfaces"
 	"bytes"
 	"fmt"
 	"net/http"
@@ -15,47 +16,80 @@ import (
 // endpoint (/auth/login)
 // ! Make sure the user has never logged in yet
 func TestLogin(t *testing.T) {
-	// Create defined testLogin struct
-	type testLogin struct {
-		inputBodyJSON      string
-		expectedStatusCode int
-	}
 	// Create a slice of testcase struct
-	testCase := make([]testLogin, 0)
+	testCase := make([]interfaces.TestBody, 0)
 	// A correct test case
-	testCase = append(testCase, testLogin{
-		inputBodyJSON:      `{"username":"tester", "password":"tester"}`,
-		expectedStatusCode: 202,
+	testCase = append(testCase, interfaces.TestBody{
+		InputBodyJSON:      `{"username":"tester", "password":"tester"}`,
+		ExpectedStatusCode: 202,
 	})
-	// A false username test case
-	testCase = append(testCase, testLogin{
-		inputBodyJSON:      `{"username":"notTester", "password":"tester"}`,
-		expectedStatusCode: 400,
+	// A false test case [username not found]
+	testCase = append(testCase, interfaces.TestBody{
+		InputBodyJSON:      `{"username":"notTester", "password":"tester"}`,
+		ExpectedStatusCode: 400,
 	})
-	// A false password test case
-	testCase = append(testCase, testLogin{
-		inputBodyJSON:      `{"username":"tester", "password":"notPasswordTester"}`,
-		expectedStatusCode: 400,
+	// A false test case [password is wrong]
+	testCase = append(testCase, interfaces.TestBody{
+		InputBodyJSON:      `{"username":"tester", "password":"notPasswordTester"}`,
+		ExpectedStatusCode: 400,
 	})
-	// User cannot login twice
-	testCase = append(testCase, testLogin{
-		inputBodyJSON:      `{"username":"tester", "password":"tester"}`,
-		expectedStatusCode: 400,
+	// A false test case [user cannot login twice]
+	testCase = append(testCase, interfaces.TestBody{
+		InputBodyJSON:      `{"username":"tester", "password":"tester"}`,
+		ExpectedStatusCode: 400,
 	})
 
 	// Check every testcase
 	for _, tc := range testCase {
-		fmt.Println(tc.inputBodyJSON)
+		fmt.Println(tc.InputBodyJSON)
 		// Make a request to the /auth/login
-		req, err := http.NewRequest("POST", "/auth/login", bytes.NewBufferString(tc.inputBodyJSON))
+		req, err := http.NewRequest("POST", "/auth/login", bytes.NewBufferString(tc.InputBodyJSON))
 		if err != nil {
 			t.Errorf("Error trying to get new request post to /auth/login: %v", err)
 		}
-		// Create a http test
+		// Create http test
 		r := httptest.NewRecorder()
 		h := http.HandlerFunc(auth.LoginHandler)
 		h.ServeHTTP(r, req)
 		// Assert the result with the expected result
-		assert.Equal(t, r.Code, tc.expectedStatusCode)
+		assert.Equal(t, r.Code, tc.ExpectedStatusCode)
+	}
+}
+
+// TestRegister is used to test registering a user
+// it tests the endpoint /auth/register
+func TestRegister(t *testing.T) {
+	// Create a slice of testcase struct
+	testCase := make([]interfaces.TestBody, 0)
+	// A correct test case
+	testCase = append(testCase, interfaces.TestBody{
+		InputBodyJSON:      `{"username":"NewTester", "email":"NewTester@gmail.com", "password":"tester"}`,
+		ExpectedStatusCode: 200,
+	})
+	// A false test case [username has already been taken]
+	testCase = append(testCase, interfaces.TestBody{
+		InputBodyJSON:      `{"username":"tester", "email":"NewTester@gmail.com", "password":"tester"}`,
+		ExpectedStatusCode: 400,
+	})
+	// A false test case [email has already been taken]
+	testCase = append(testCase, interfaces.TestBody{
+		InputBodyJSON:      `{"username":"VeryNewTester", "email":"tester@gmail.com", "password":"tester"}`,
+		ExpectedStatusCode: 400,
+	})
+
+	// Check every testcase
+	for _, tc := range testCase {
+		fmt.Println(tc.InputBodyJSON)
+		// Make a request to the /auth/register
+		req, err := http.NewRequest("POST", "/auth/register", bytes.NewBufferString(tc.InputBodyJSON))
+		if err != nil {
+			t.Errorf("Error trying to get new request post to /auth/register: %v", err)
+		}
+		// Create http test
+		r := httptest.NewRecorder()
+		h := http.HandlerFunc(auth.RegisterHandler)
+		h.ServeHTTP(r, req)
+		// Assert the result with the expected result
+		assert.Equal(t, r.Code, tc.ExpectedStatusCode)
 	}
 }
