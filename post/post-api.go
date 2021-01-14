@@ -22,7 +22,7 @@ import (
 func GetPostHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	// Gets the threadID
-	_, err := strconv.ParseUint(vars["threadID"], 10, 64)
+	threadID, err := strconv.ParseUint(vars["threadID"], 10, 64)
 	if err != nil {
 		handleError(w, err)
 		return
@@ -36,7 +36,7 @@ func GetPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Gets the response
-	response, err := GetPost(uint(postID))
+	response, err := GetPost(uint(postID), uint(threadID))
 	if err != nil {
 		handleError(w, err)
 		return

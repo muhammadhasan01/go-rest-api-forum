@@ -43,13 +43,13 @@ func AddPost(threadID uint, userID uint, username string, title string, descript
 }
 
 // GetPost is a function to get a post from a post ID
-func GetPost(postID uint) (PostResponse, error) {
+func GetPost(postID uint, threadID uint) (PostResponse, error) {
 	db := utils.ConnectDB()
 	defer db.Close()
 
 	// Check whether the post exists
 	var post interfaces.Post
-	if err := db.First(&post, postID).Error; err != nil {
+	if err := db.Where("id = ? AND thread_id = ? ", postID, threadID).First(&post, postID).Error; err != nil {
 		return PostResponse{}, err
 	}
 
