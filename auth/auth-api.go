@@ -81,7 +81,7 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	claims, _ := GetClaims(r)
 
 	// Gets the token in the header
-	// ! Check if there token handler in the middleware
+	// ! Check if there is a token handler in the middleware
 	token := r.Header["Token"][0]
 
 	response := Logout(claims["user_id"].(uint), token, claims["username"].(string))
