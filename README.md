@@ -1,4 +1,4 @@
-# Onboarding Hasan
+# Golang RESTful API Forum
 
 A repository for Golang RESTful API  that provides the backend for a discussion forum with Users, Threads and Posts
 
@@ -32,7 +32,7 @@ There is some testing made in the [test](./test) folder, and you can run it by t
 
 ## Authors
 
-* **Muhammad Hasan** - [muhammadhasan01](https://github.com/muhammadhasan01)
+**Muhammad Hasan** - [muhammadhasan01](https://github.com/muhammadhasan01)
 
 ## License
 
@@ -42,5 +42,5 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 * Hat tip to anyone whose code was used
 * Golang Tutorials
-* The Hydra Squad
+* The Hydra Squad ([Naufal](https://github.com/primayoriko), [Dean](https://github.com/naufal-dean), [Taufiq](https://github.com/taufiqhusada))
 * Pinhome CTO, Mr. Ahmed Aljunied :)
